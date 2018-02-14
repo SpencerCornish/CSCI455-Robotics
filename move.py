@@ -14,15 +14,21 @@ os.system('xset r off')
 go_forward = False
 go_backward = False
 
+global forward_speed
+forward_speed = 4500
+
+global backward_speed
+backward_speed = 7500
+
 #driving forward speeds
-one_forward = 5500
-two_forward = 4500
-three_forward = 3500
+one_forward = 5300
+two_forward = 4800
+three_forward = 3000
 
 #driving backward speeds
-one_backward = 6500
-two_backward = 7500
-three_backward = 8500
+one_backward = 6700
+two_backward = 7200
+three_backward = 8000
 
 #neutral speed
 neutral = 6000
@@ -67,28 +73,28 @@ def d_released():
 
 #body turn left
 def q_pressed():
-    servo.setTarget(body_target,8900)
+    servo.setTarget(body_target,8600)
 def q_released():
     servo.setTarget(body_target,neutral)
 
 #body turn right
 def e_pressed():
-    servo.setTarget(body_target,3100)
+    servo.setTarget(body_target,3400)
 def e_released():
     servo.setTarget(body_target,neutral)
 
 #go forwards -- driving
-def up_pressed(speed=4500):
+def up_pressed():
     go_forward = True
-    servo.setTarget(drive_target,speed)
+    servo.setTarget(drive_target,forward_speed)
 def up_released():
     go_forward = False
     servo.setTarget(drive_target,neutral)
 
 #go backwards -- driving
-def down_pressed(speed=7500):
+def down_pressed():
     go_backward = True
-    servo.setTarget(drive_target,speed)
+    servo.setTarget(drive_target,backward_speed)
 def down_released():
     go_backward = False
     servo.setTarget(drive_target,neutral)
@@ -112,24 +118,41 @@ def space_pressed():
 
 #set driving speed to speed 1
 def one_pressed():
+    global forward_speed
+    global backward_speed
+
+    forward_speed = one_forward
+    backward_speed = one_backward
     if go_forward:
-        up_pressed(one_forward)
+        up_released()
+        up_pressed()
     elif go_backward:
-        down_pressed(one_backward)
+        down_released()
+        down_pressed()
 
 #set driving speed to speed 2
 def two_pressed():
+    global forward_speed
+    global backward_speed
+    forward_speed = two_forward
+    backward_speed = two_backward
     if go_forward:
-        up_pressed(two_forward)
+        up_released()
+        up_pressed()
     elif go_backward:
-        down_pressed(two_backward)
+        down_released()
+        down_pressed()
 
 #set driving speed to speed 3
 def three_pressed():
+    forward_speed = three_forward
+    backward_speed = three_backward
     if go_forward:
-        up_pressed(three_forward)
+        up_released()
+        up_pressed()
     elif go_backward:
-        down_pressed(three_backward)
+        down_released()
+        down_pressed()
 
 #get value of key pressed, execute correct function
 def key_pressed(e):
