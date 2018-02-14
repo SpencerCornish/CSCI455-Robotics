@@ -20,6 +20,12 @@ forward_speed = 4500
 global backward_speed
 backward_speed = 7500
 
+global head_angle
+head_angle = 6000
+
+global neck_angle
+neck_angle = 6000
+
 #driving forward speeds
 one_forward = 5300
 two_forward = 4800
@@ -48,28 +54,52 @@ for i in range(5):
 
 servo.setAccel(drive_target, 6)
 
-#head looks up
 def w_pressed():
-    servo.setTarget(head_target,9000)
-def w_released():
-    servo.setTarget(head_target,neutral)
+    global head_angle
+    if head_angle < 9000:
+        head_angle += 1500
+    servo.setTarget(head_target, head_angle)
 
-#head looks down
 def s_pressed():
-    servo.setTarget(head_target,3000)
-def s_released():
-    servo.setTarget(head_target,neutral)
+    global head_angle
+    if head_angle > 3000:
+        head_angle -= 1500
+    servo.setTarget(head_target, head_angle)
 
-#neck turn left
 def a_pressed():
-    servo.setTarget(neck_target,8900)
-def a_released():
-    servo.setTarget(neck_target,neutral)
-#neck turn right
+    global neck_angle
+    if neck_angle < 9000
+        neck_angle += 1500
+    servo.setTarget(neck_target, neck_angle)
+
 def d_pressed():
-    servo.setTarget(neck_target,3100)
-def d_released():
-    servo.setTarget(neck_target,neutral)
+    global neck_angle
+    if neck_angle > 3000:
+        neck_angle -= 1500
+    servo.setTarget(neck_target, neck_angle)
+
+#head looks up
+# def w_pressed():
+#     servo.setTarget(head_target,9000)
+# def w_released():
+#     servo.setTarget(head_target,neutral)
+#
+# #head looks down
+# def s_pressed():
+#     servo.setTarget(head_target,3000)
+# def s_released():
+#     servo.setTarget(head_target,neutral)
+#
+# #neck turn left
+# def a_pressed():
+#     servo.setTarget(neck_target,8900)
+# def a_released():
+#     servo.setTarget(neck_target,neutral)
+# #neck turn right
+# def d_pressed():
+#     servo.setTarget(neck_target,3100)
+# def d_released():
+#     servo.setTarget(neck_target,neutral)
 
 #body turn left
 def q_pressed():
