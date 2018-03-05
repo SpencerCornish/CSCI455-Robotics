@@ -68,7 +68,7 @@ def s_pressed():
 
 def a_pressed():
     global neck_angle
-    if neck_angle < 9000
+    if neck_angle < 9000:
         neck_angle += 1500
     servo.setTarget(neck_target, neck_angle)
 
