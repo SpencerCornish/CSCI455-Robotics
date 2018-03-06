@@ -1,7 +1,6 @@
 from tkinter import dnd
 import tkinter as tkinter
 
-
 class Motion:
 
     def __init__(self, name):
@@ -17,7 +16,7 @@ class Motion:
         if not canvas:
             return
         label = tkinter.Label(canvas, text=self.name,
-                              borderwidth=2, relief="raised", width="6", height="2",bg="#3090C7",fg="white")
+                              borderwidth=2, relief="raised", width="8", height="2",bg="#3090C7",fg="white")
         id = canvas.create_window(x, y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
@@ -56,7 +55,7 @@ class RobotGui:
 
     def __init__(self, root):
         self.top = tkinter.Toplevel(root)
-        self.canvas = tkinter.Canvas(self.top, width=600, height=400)
+        self.canvas = tkinter.Canvas(self.top, width=700, height=400)
         self.canvas.pack(fill="both", expand=1)
         self.canvas.dnd_accept = self.dnd_accept
 
@@ -84,8 +83,9 @@ class RobotGui:
     def dnd_commit(self, source, event):
         self.dnd_leave(source, event)
         x, y = source.where(self.canvas, event)
-        target = self.canvas.find_closest(x+30,y+10)
-        blocks[target[0]-5].changeMotionName(event.widget['text'], self.canvas)
+        target = self.canvas.find_closest(x+37,y+10)
+        if target[0] < 15 and target[0] > 6:
+            blocks[target[0]-6].changeMotionName(event.widget['text'], self.canvas)
         source.putback()
 
 class Block:
@@ -102,7 +102,7 @@ class Block:
             self.canvas.coords(self.id, self.x, self.y)
             return
         label = tkinter.Label(canvas, text=self.name,
-                              borderwidth=2, bg="grey", relief="sunken", highlightcolor="#6eb1d7", width="6", height="5")
+                              borderwidth=2, bg="grey", relief="sunken", highlightcolor="#6eb1d7", width="8", height="6")
         id = canvas.create_window(self.x, self.y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
@@ -110,34 +110,38 @@ class Block:
 
     def changeMotionName(self, motionName, canvas):
         self.name = motionName
+        canvas.delete(self.id)
         label = tkinter.Label(canvas, text=self.name,
-                               borderwidth=2, bg="#6eb1d7", relief="sunken", highlightcolor="#6eb1d7", width="6", height="5")
+                               borderwidth=2, bg="#6eb1d7", relief="sunken", highlightcolor="#6eb1d7", width="8", height="6")
         canvas.create_window(self.x, self.y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
+        print(self.id)
         self.motionid = motions[self.name]
 
 blocks = {}
 for i in range(1,9):
-    blocks[i] = Block(i, (i-1)*70+10, 100)
-motions = {"HEAD":1, "NECK":2, "BODY":3, "DRIVE":4, "TURN":5}
+    blocks[i] = Block(i, (i-1)*85+10, 100)
+motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/R":4, "TURN L/R":5, "PAUSE":6}
 
-def test():
+def setup():
     root = tkinter.Tk()
     root.geometry("0x0")
     root.geometry("+0+0")
     tkinter.Button(command=root.quit, text="Quit").pack()
     t1 = RobotGui(root)
-    motion1 = Motion("HEAD")
-    motion2 = Motion("NECK")
-    motion3 = Motion("BODY")
-    motion4 = Motion("DRIVE")
-    motion5 = Motion("TURN")
+    motion1 = Motion("HEAD U/D")
+    motion2 = Motion("NECK L/R")
+    motion3 = Motion("BODY L/R")
+    motion4 = Motion("DRIVE F/R")
+    motion5 = Motion("TURN L/R")
+    motion6 = Motion("PAUSE")
     motion1.addMotion(t1.canvas, 10, 10)
-    motion2.addMotion(t1.canvas, 80, 10)
-    motion3.addMotion(t1.canvas, 150, 10)
-    motion4.addMotion(t1.canvas, 220, 10)
-    motion5.addMotion(t1.canvas, 290, 10)
+    motion2.addMotion(t1.canvas, 95, 10)
+    motion3.addMotion(t1.canvas, 180, 10)
+    motion4.addMotion(t1.canvas, 265, 10)
+    motion5.addMotion(t1.canvas, 350, 10)
+    motion6.addMotion(t1.canvas, 435, 10)
     quit = tkinter.Button(t1.canvas, command=root.quit, text="QUIT")
     start = tkinter.Button(t1.canvas, text="START")
     quit.place(x=300,y=250)
@@ -148,4 +152,4 @@ def test():
     root.mainloop()
 
 if __name__ == '__main__':
-    test()
+    setup()
