@@ -1,6 +1,7 @@
 from tkinter import dnd
 import tkinter as tkinter
 
+
 class Motion:
 
     def __init__(self, name):
@@ -83,27 +84,43 @@ class RobotGui:
     def dnd_commit(self, source, event):
         self.dnd_leave(source, event)
         x, y = source.where(self.canvas, event)
+        target = self.canvas.find_closest(x+30,y+10)
+        blocks[target[0]-5].changeMotionName(event.widget['text'], self.canvas)
         source.putback()
-        #source.addMotion(self.canvas, x, y)
 
 class Block:
-    def __init__(self, number, name="EMPTY", motionid=-1):
+    def __init__(self, number, x, y, name="EMPTY", motionid=-1):
         self.number = number
         self.name = name
         self.motionid = motionid
         self.canvas = self.label = self.id = None
+        self.x = x
+        self.y = y
 
-    def addBlock(self, canvas, x, y):
+    def addBlock(self, canvas):
         if canvas is self.canvas:
-            self.canvas.coords(self.id, x, y)
+            self.canvas.coords(self.id, self.x, self.y)
             return
         label = tkinter.Label(canvas, text=self.name,
                               borderwidth=2, bg="grey", relief="sunken", highlightcolor="#6eb1d7", width="6", height="5")
-        id = canvas.create_window(x, y, window=label, anchor="nw")
+        id = canvas.create_window(self.x, self.y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
         self.id = id
 
+    def changeMotionName(self, motionName, canvas):
+        self.name = motionName
+        label = tkinter.Label(canvas, text=self.name,
+                               borderwidth=2, bg="#6eb1d7", relief="sunken", highlightcolor="#6eb1d7", width="6", height="5")
+        canvas.create_window(self.x, self.y, window=label, anchor="nw")
+        self.canvas = canvas
+        self.label = label
+        self.motionid = motions[self.name]
+
+blocks = {}
+for i in range(1,9):
+    blocks[i] = Block(i, (i-1)*70+10, 100)
+motions = {"HEAD":1, "NECK":2, "BODY":3, "DRIVE":4, "TURN":5}
 
 def test():
     root = tkinter.Tk()
@@ -111,7 +128,6 @@ def test():
     root.geometry("+0+0")
     tkinter.Button(command=root.quit, text="Quit").pack()
     t1 = RobotGui(root)
-    # t1.top.geometry("+1+1")
     motion1 = Motion("HEAD")
     motion2 = Motion("NECK")
     motion3 = Motion("BODY")
@@ -126,10 +142,8 @@ def test():
     start = tkinter.Button(t1.canvas, text="START")
     quit.place(x=300,y=250)
     start.place(x=400,y=250)
-    blocks = {}
     for i in range(1,9):
-        blocks[i] = Block(i)
-        Block(i).addBlock(t1.canvas, (i-1)*70+10, 100)
+        blocks[i].addBlock(t1.canvas)
 
     root.mainloop()
 
