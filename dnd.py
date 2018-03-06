@@ -116,7 +116,6 @@ class Block:
         canvas.create_window(self.x, self.y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
-        print(self.id)
         self.motionid = motions[self.name]
 
 blocks = {}
