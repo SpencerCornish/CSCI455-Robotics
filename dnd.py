@@ -1,7 +1,8 @@
 from tkinter import dnd
 import tkinter as tkinter
 
-
+global animation_window
+global animation
 class Motion:
 
     def __init__(self, name):
@@ -122,6 +123,50 @@ for i in range(1,9):
     blocks[i] = Block(i, (i-1)*70+10, 100)
 motions = {"HEAD":1, "NECK":2, "BODY":3, "DRIVE":4, "TURN":5}
 
+class Animation:
+    def __init__(self, root):
+        self.top = tkinter.Toplevel(root)
+        self.canvas = tkinter.Canvas(self.top, width=600, height=400)
+        self.canvas.pack(fill="both", expand=1)
+        self.canvas.create_oval(75, 75, 285, 285, fill='black')
+        self.canvas.create_oval(325, 75, 535, 285, fill='black')
+        self.shape_eyeball_l = self.canvas.create_oval(80, 80, 280, 280, fill='white')
+        self.shape_eyeball_r = self.canvas.create_oval(330, 80, 530, 280, fill='white')
+        self.pupil_l = self.canvas.create_oval(120,120,140,140, fill='blue')
+        self.pupil_r = self.canvas.create_oval(390,180,410,200, fill='blue')
+        self.speedy_l = 8
+        self.speedy_r = 8
+        self.active = True
+        self.move_active()
+
+    def pupil_update(self):
+        self.canvas.move(self.pupil_l, 0, self.speedy_l)
+        self.canvas.move(self.pupil_r, 0, self.speedy_r)
+        pos = self.canvas.coords(self.pupil_l)
+        if pos[3] >= 220 or pos[1] <= 120:
+            self.speedy_l *= -1
+        pos = self.canvas.coords(self.pupil_r)
+
+        if pos[3] >= 220 or pos[1] <= 120:
+            self.speedy_r *= -1
+
+    def move_active(self):
+        if self.active:
+            self.pupil_update()
+            self.canvas.after(40, self.move_active) # changed from 10ms to 30ms
+
+
+
+
+def render_fun_animation():
+    animation = tkinter.Tk()
+    animation.geometry("0x0")
+    animation.geometry("+0+0")
+    animation_window = Animation(animation)
+    animation.mainloop()
+
+
+
 def test():
     root = tkinter.Tk()
     root.geometry("0x0")
@@ -139,7 +184,7 @@ def test():
     motion4.addMotion(t1.canvas, 220, 10)
     motion5.addMotion(t1.canvas, 290, 10)
     quit = tkinter.Button(t1.canvas, command=root.quit, text="QUIT")
-    start = tkinter.Button(t1.canvas, text="START")
+    start = tkinter.Button(t1.canvas,command=render_fun_animation, text="START")
     quit.place(x=300,y=250)
     start.place(x=400,y=250)
     for i in range(1,9):
