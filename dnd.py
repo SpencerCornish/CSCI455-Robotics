@@ -1,5 +1,6 @@
-from tkinter import dnd
+from tkinter import dnd, messagebox
 import tkinter as tkinter
+
 
 class Motion:
 
@@ -84,6 +85,7 @@ class RobotGui:
         self.dnd_leave(source, event)
         x, y = source.where(self.canvas, event)
         target = self.canvas.find_closest(x+37,y+10)
+
         if target[0] < 15 and target[0] > 6:
             blocks[target[0]-6].changeMotionName(event.widget['text'], self.canvas)
         source.putback()
@@ -96,6 +98,8 @@ class Block:
         self.canvas = self.label = self.id = None
         self.x = x
         self.y = y
+        self.degrees = None
+        self.seconds = None
 
     def addBlock(self, canvas):
         if canvas is self.canvas:
@@ -110,24 +114,69 @@ class Block:
 
     def changeMotionName(self, motionName, canvas):
         self.name = motionName
-        canvas.delete(self.id)
+        #canvas.delete(self.id)
         label = tkinter.Label(canvas, text=self.name,
                                borderwidth=2, bg="#6eb1d7", relief="sunken", highlightcolor="#6eb1d7", width="8", height="6")
-        canvas.create_window(self.x, self.y, window=label, anchor="nw")
+        id = canvas.create_window(self.x, self.y, window=label, anchor="nw")
         self.canvas = canvas
         self.label = label
         self.motionid = motions[self.name]
+
+
+
+class Driver:
+    def __init__(self, canvas, root):
+        self.canvas = canvas
+        self.root = root
+        self.var = tkinter.IntVar()
+        self.userEntries = {}
+        self.motionList = {}
+
+    def getMotionList(self):
+        for i in range(1,9):
+            self.motionList[i] = blocks[i].motionid
+        # print(self.motionList)
+        self.getParameters(self.motionList)
+
+    def getParameters(self, motionList):
+        optionWindow = tkinter.Toplevel(self.root)
+
+        for i in range(1,9):
+            if motionList[i] == 1 or motionList[i] == 2 or motionList[i] == 3 or motionList[i] == 5:
+                tkinter.Label(optionWindow, text="Degrees for " + blocks[i].name).grid(row=i-1, column=0)
+                self.userEntries[i] = tkinter.Entry(optionWindow)
+                self.userEntries[i].grid(row=i-1, column=1)
+            elif motionList[i] == 4 or motionList[i] == 6:
+                tkinter.Label(optionWindow, text="Seconds for "+ blocks[i].name).grid(row=i-1,column=0)
+                self.userEntries[i] = tkinter.Entry(optionWindow)
+                self.userEntries[i].grid(row=i-1, column=1)
+
+        okButton = tkinter.Button(optionWindow, command=self.setValues, text="START")
+        cancelButton = tkinter.Button(optionWindow, command=lambda: self.var.set(1), text="CANCEL")
+        okButton.grid(row=9,column=1)
+        cancelButton.grid(row=9,column=0)
+        okButton.wait_variable(self.var)
+        optionWindow.destroy()
+
+    def setValues(self):
+        for i in range(1,9):
+            if self.motionList[i] == 1 or self.motionList[i] == 2 or self.motionList[i] == 3 or self.motionList[i] == 5:
+                blocks[i].degrees = self.userEntries[i].get()
+            elif self.motionList[i] == 4 or self.motionList[i] == 6:
+                blocks[i].seconds = self.userEntries[i].get()
+        self.var.set(1)
+
 
 blocks = {}
 for i in range(1,9):
     blocks[i] = Block(i, (i-1)*85+10, 100)
 motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/R":4, "TURN L/R":5, "PAUSE":6}
 
+
 def setup():
     root = tkinter.Tk()
     root.geometry("0x0")
     root.geometry("+0+0")
-    tkinter.Button(command=root.quit, text="Quit").pack()
     t1 = RobotGui(root)
     motion1 = Motion("HEAD U/D")
     motion2 = Motion("NECK L/R")
@@ -141,13 +190,15 @@ def setup():
     motion4.addMotion(t1.canvas, 265, 10)
     motion5.addMotion(t1.canvas, 350, 10)
     motion6.addMotion(t1.canvas, 435, 10)
-    quit = tkinter.Button(t1.canvas, command=root.quit, text="QUIT")
-    start = tkinter.Button(t1.canvas, text="START")
-    quit.place(x=300,y=250)
-    start.place(x=400,y=250)
+    driver = Driver(t1.canvas, root)
+    quitButton = tkinter.Button(t1.canvas, command=root.quit, text="QUIT")
+    clearButton = tkinter.Button(t1.canvas, text="CLEAR")
+    startButton = tkinter.Button(t1.canvas, command=driver.getMotionList, text="CONFIGURE")
+    quitButton.place(x=200,y=250)
+    clearButton.place(x=300,y=250)
+    startButton.place(x=400,y=250)
     for i in range(1,9):
         blocks[i].addBlock(t1.canvas)
-
     root.mainloop()
 
 if __name__ == '__main__':
