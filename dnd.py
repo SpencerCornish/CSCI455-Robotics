@@ -1,6 +1,7 @@
 from tkinter import dnd, messagebox
 import tkinter as tkinter
 import move
+import time
 
 class Motion:
 
@@ -154,6 +155,10 @@ class Driver:
                 tkinter.Checkbutton(optionWindow, text="Left", variable = self.left[i]).grid(row=i-1, column = 1, sticky=tkinter.W)
                 self.right[i] = tkinter.IntVar()
                 tkinter.Checkbutton(optionWindow, text="Right", variable=self.right[i]).grid(row=i-1, column=2, sticky=tkinter.W)
+            if motionList[i] == 5:
+                tkinter.Label(optionWindow,text="Seconds: "+blocks[i].name).grid(row=i-1, column=3, sticky=tkinter.W)
+                self.seconds[i] = tkinter.Scale(optionWindow, from_=0, to=10, orient=tkinter.HORIZONTAL)
+                self.seconds[i].grid(row=i-1, column =4, sticky=tkinter.W)
             elif motionList[i] == 1:
                 tkinter.Label(optionWindow, text="Up or Down for " + blocks[i].name).grid(row=i-1, column=0, sticky=tkinter.W)
                 self.up[i] = tkinter.IntVar()
@@ -183,49 +188,68 @@ class Driver:
 
     def setValues(self):
         mover = move.Move()
+        self.var.set(1)
         for i in range(1,9):
             if self.motionList[i] == 1:
                 if self.up[i].get() == 1:
                     print("move head up")
                     mover.executeMotion(motionList[i], self.up[i].get(), 0)
+                    time.sleep(1)
+                    mover.reset()
                 else:
                     print("move head down")
                     mover.executeMotion(motionList[i], 0, 0)
+                    time.sleep(1)
+                    mover.reset()
             elif self.motionList[i] == 2:
                 if self.left[i].get() == 1:
                     print("move head left")
                     mover.executeMotion(motionList[i], self.left[i].get(), 0)
+                    time.sleep(1)
+                    mover.reset()
                 else:
                     print("move head right")
                     mover.executeMotion(motionList[i], 0, 0)
+                    time.sleep(1)
+                    mover.reset()
             elif self.motionList[i] == 3:
                 if self.left[i].get() == 1:
                     print("move body left")
                     mover.executeMotion(motionList[i], self.left[i].get(), 0)
+                    time.sleep(1)
+                    mover.reset()
                 else:
                     print("move body right")
                     mover.executeMotion(motionList[i], 0, 0)
+                    time.sleep(1)
+                    mover.reset()
             elif self.motionList[i] == 4:
                 seconds = self.seconds[i].get()
                 if self.forward[i].get() == 1:
                     print("drive forward seconds", seconds)
                     mover.executeMotion(motionList[i], self.forward[i].get(), seconds)
+                    time.sleep(1)
                 else:
                     print("drive backwards Seconds", seconds)
                     mover.executeMotion(motionList[i], 0, seconds)
+                    time.sleep(1)
             elif self.motionList[i] == 5:
+                seconds = self.seconds[i].get()
                 if self.left[i].get() == 1:
-                    print("turn left")
-                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
+                    print("turn left for seconds", seconds)
+                    mover.executeMotion(motionList[i], self.left[i].get(), seconds)
+                    time.sleep(1)
                 else:
-                    print("turn right")
-                    mover.executeMotion(motionList[i], 0, 0)
+                    print("turn right for seconds", seconds)
+                    mover.executeMotion(motionList[i], 0, seconds)
+                    time.sleep(1)
             elif self.motionList[i] == 6:
                 seconds = self.seconds[i].get()
                 print("sleep seconds", seconds)
                 mover.executeMotion(motionList[i], 0, seconds)
 
-        self.var.set(1)
+            mover.reset()
+
 
 
 blocks = {}

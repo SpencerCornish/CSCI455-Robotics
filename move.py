@@ -43,115 +43,115 @@ neck_target = 3
 head_target = 4
 
 class Move:
-    def __init(self):
+    def __init__(self):
         self.servo = Controller()
         #self.root = tk.Tk()
         os.system('xset r off')
         #set targets to neutral
         for i in range(5):
-            servo.setTarget(i,neutral)
-            servo.setSpeed(i,0)
-            servo.setAccel(i,60)
+            self.servo.setTarget(i,neutral)
+            self.servo.setSpeed(i,0)
+            self.servo.setAccel(i,60)
 
-        servo.setAccel(drive_target, 6)
+        self.servo.setAccel(drive_target, 6)
     #move head up
-    def w_pressed():
+    def w_pressed(self):
         global head_angle
         if head_angle < 9000:
             head_angle += 1500
-        servo.setTarget(head_target, head_angle)
+        self.servo.setTarget(head_target, head_angle)
     #move head down
-    def s_pressed():
+    def s_pressed(self):
         global head_angle
         if head_angle > 3000:
             head_angle -= 1500
-        servo.setTarget(head_target, head_angle)
+        self.servo.setTarget(head_target, head_angle)
     #move neck left
-    def a_pressed():
+    def a_pressed(self):
         global neck_angle
         if neck_angle < 9000:
             neck_angle += 1500
-        servo.setTarget(neck_target, neck_angle)
+        self.servo.setTarget(neck_target, neck_angle)
     #move neck right
-    def d_pressed():
+    def d_pressed(self):
         global neck_angle
         if neck_angle > 3000:
             neck_angle -= 1500
-        servo.setTarget(neck_target, neck_angle)
+        self.servo.setTarget(neck_target, neck_angle)
     #body turn left
-    def q_pressed():
-        servo.setTarget(body_target,8600)
-    def q_released():
-        servo.setTarget(body_target,neutral)
+    def q_pressed(self):
+        self.servo.setTarget(body_target,8600)
+    def q_released(self):
+        self.servo.setTarget(body_target,neutral)
     #body turn right
-    def e_pressed():
-        servo.setTarget(body_target,3400)
-    def e_released():
-        servo.setTarget(body_target,neutral)
+    def e_pressed(self):
+        self.servo.setTarget(body_target,3400)
+    def e_released(self):
+        self.servo.setTarget(body_target,neutral)
     #drive forward
-    def one_forward(seconds):
-        servo.setTarget(drive_target,one_forward)
+    def one_forward(self, seconds):
+        self.servo.setTarget(drive_target,one_forward)
         time.sleep(seconds)
-        servo.setTarget(drive_target,neutral)
+        self.servo.setTarget(drive_target,neutral)
     #drive backwards
-    def one_backward(seconds):
-        servo.setTarget(drive_target,one_backward)
+    def one_backward(self, seconds):
+        self.servo.setTarget(drive_target,one_backward)
         time.sleep(seconds)
-        servo.setTarget(drive_target,neutral)
+        self.servo.setTarget(drive_target,neutral)
     #turn left
-    def turn_left(seconds):
-        servo.setTarget(turn_target,7000)
+    def turn_left(self, seconds):
+        self.servo.setTarget(turn_target,7000)
         time.sleep(seconds)
-        servo.setTarget(turn_target,neutral)
+        self.servo.setTarget(turn_target,neutral)
     #turn right
-    def turn_right(seconds):
-        servo.setTarget(turn_target,5000)
+    def turn_right(self, seconds):
+        self.servo.setTarget(turn_target,5000)
         time.sleep(seconds)
-        servo.setTarget(turn_target,neutral)
+        self.servo.setTarget(turn_target,neutral)
     #set all servos/motors to neutral
-    def space_pressed():
+    def space_pressed(self):
         for i in range(5):
-            servo.setTarget(i,neutral)
-    def executeMotion(mid, direction, seconds):
+            self.servo.setTarget(i,neutral)
+    def executeMotion(self, mid, direction, seconds):
         #HEAD
         if mid == 1:
             #if up
-            if directon == 1:
+            if direction == 1:
                 #move head up
-                w_pressed()
+                self.w_pressed()
             else:
                 #move head down
-                s_pressed()
+                self.s_pressed()
         #NECK
         elif mid == 2:
             if direction == 1:
                 #neck turn left
-                a_pressed()
+                self.a_pressed()
             else:
                 #neck turn right
-                d_pressed()
+                self.d_pressed()
         #BODY
         elif mid == 3:
-            if directon ==1:
+            if direction ==1:
                 #body turn left
-                q_pressed()
+                self.q_pressed()
             else:
                 #body turn right
-                e_pressed()
+                self.e_pressed()
         #DRIVE
         elif mid == 4:
             if direction == 1:
                 #drive forward
-                one_forward(seconds)
+                self.one_forward(seconds)
             else:
                 #drive backward
-                one_backward(seconds)
+                self.one_backward(seconds)
         #TURN
         elif mid == 5:
             if direction == 1:
-                turn_left(seconds)
+                self.turn_left(seconds)
             else:
-                turn_right(seconds)
+                self.turn_right(seconds)
         #PAUSE
         elif mid == 6:
             time.sleep(seconds)
@@ -164,7 +164,7 @@ class Move:
 
 
 #head looks up
-# def w_pressed():
+# def w_pressed():turn
 #     servo.setTarget(head_target,9000)
 # def w_released():
 #     servo.setTarget(head_target,neutral)
