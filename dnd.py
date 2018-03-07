@@ -1,7 +1,6 @@
 from tkinter import dnd, messagebox
 import tkinter as tkinter
 
-
 class Motion:
 
     def __init__(self, name):
@@ -100,6 +99,7 @@ class Block:
         self.y = y
         self.degrees = None
         self.seconds = None
+        self.direction = None
 
     def addBlock(self, canvas):
         if canvas is self.canvas:
@@ -129,8 +129,14 @@ class Driver:
         self.canvas = canvas
         self.root = root
         self.var = tkinter.IntVar()
-        self.userEntries = {}
         self.motionList = {}
+        self.up = {}
+        self.down = {}
+        self.forward = {}
+        self.backward = {}
+        self.left = {}
+        self.right = {}
+        self.seconds = {}
 
     def getMotionList(self):
         for i in range(1,9):
@@ -142,14 +148,31 @@ class Driver:
         optionWindow = tkinter.Toplevel(self.root)
 
         for i in range(1,9):
-            if motionList[i] == 1 or motionList[i] == 2 or motionList[i] == 3 or motionList[i] == 5:
-                tkinter.Label(optionWindow, text="Degrees for " + blocks[i].name).grid(row=i-1, column=0)
-                self.userEntries[i] = tkinter.Entry(optionWindow)
-                self.userEntries[i].grid(row=i-1, column=1)
-            elif motionList[i] == 4 or motionList[i] == 6:
-                tkinter.Label(optionWindow, text="Seconds for "+ blocks[i].name).grid(row=i-1,column=0)
-                self.userEntries[i] = tkinter.Entry(optionWindow)
-                self.userEntries[i].grid(row=i-1, column=1)
+            if motionList[i] == 2 or motionList[i] == 3 or motionList[i] == 5:
+                tkinter.Label(optionWindow, text="Left or Right for " + blocks[i].name).grid(row=i-1, column=0, sticky=tkinter.W)
+                self.left[i] = tkinter.IntVar()
+                tkinter.Checkbutton(optionWindow, text="Left", variable = self.left[i]).grid(row=i-1, column = 1, sticky=tkinter.W)
+                self.right[i] = tkinter.IntVar()
+                tkinter.Checkbutton(optionWindow, text="Right", variable=self.right[i]).grid(row=i-1, column=2, sticky=tkinter.W)
+            elif motionList[i] == 1:
+                tkinter.Label(optionWindow, text="Up or Down for " + blocks[i].name).grid(row=i-1, column=0, sticky=tkinter.W)
+                self.up[i] = tkinter.IntVar()
+                self.down[i] = tkinter.IntVar()
+                tkinter.Checkbutton(optionWindow, text="Up", variable=self.up[i]).grid(row=i-1, column=1, sticky=tkinter.W)
+                tkinter.Checkbutton(optionWindow, text="Down", variable=self.down[i]).grid(row=i-1, column=2, sticky=tkinter.W)
+            elif motionList[i] == 4:
+                tkinter.Label(optionWindow, text="Forward or Backward for "+ blocks[i].name).grid(row=i-1,column=0, sticky=tkinter.W)
+                self.forward[i] = tkinter.IntVar()
+                self.backward[i] = tkinter.IntVar()
+                tkinter.Checkbutton(optionWindow, text="Forward", variable=self.forward[i]).grid(row=i-1, column=1, sticky=tkinter.W)
+                tkinter.Checkbutton(optionWindow, text="Backward", variable=self.backward[i]).grid(row=i-1, column=2, sticky=tkinter.W)
+                tkinter.Label(optionWindow,text="Seconds: ").grid(row=i-1, column=3, sticky=tkinter.W)
+                self.seconds[i] = tkinter.Scale(optionWindow, from_=0, to=10, orient=tkinter.HORIZONTAL)
+                self.seconds[i].grid(row=i-1, column =4, sticky=tkinter.W)
+            elif motionList[i] == 6:
+                tkinter.Label(optionWindow,text="Seconds for "+blocks[i].name).grid(row=i-1, column=0, sticky=tkinter.W)
+                self.seconds[i] = tkinter.Scale(optionWindow, from_=0, to=10, orient=tkinter.HORIZONTAL)
+                self.seconds[i].grid(row=i-1, column =1, sticky=tkinter.W)
 
         okButton = tkinter.Button(optionWindow, command=self.setValues, text="START")
         cancelButton = tkinter.Button(optionWindow, command=lambda: self.var.set(1), text="CANCEL")
@@ -160,17 +183,46 @@ class Driver:
 
     def setValues(self):
         for i in range(1,9):
-            if self.motionList[i] == 1 or self.motionList[i] == 2 or self.motionList[i] == 3 or self.motionList[i] == 5:
-                blocks[i].degrees = self.userEntries[i].get()
-            elif self.motionList[i] == 4 or self.motionList[i] == 6:
-                blocks[i].seconds = self.userEntries[i].get()
+            if self.motionList[i] == 1:
+                if self.up[i].get() == 1:
+                    print("move head up")
+                else:
+                    print("move head down")
+            elif self.motionList[i] == 2:
+                if self.left[i].get() == 1:
+                    print("move head left")
+                else:
+                    print("move head right")
+            elif self.motionList[i] == 3:
+                if self.left[i].get() == 1:
+                    print("move body left")
+                else:
+                    print("move body right")
+            elif self.motionList[i] == 4:
+                seconds = self.seconds[i].get()
+                if self.forward[i].get() == 1:
+                    print("drive forward seconds", seconds)
+                else:
+                    print("drive backwards Seconds", seconds)
+            elif self.motionList[i] == 5:
+                if self.left[i].get() ==1:
+                    print("turn left")
+                else:
+                    print("turn right")
+            elif self.motionList[i] == 6:
+                seconds = self.seconds[i].get()
+                print("sleep seconds", seconds)
+
         self.var.set(1)
+
+    def executeMotions(self):
+        pass
 
 
 blocks = {}
 for i in range(1,9):
     blocks[i] = Block(i, (i-1)*85+10, 100)
-motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/R":4, "TURN L/R":5, "PAUSE":6}
+motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/B":4, "TURN L/R":5, "PAUSE":6}
 
 
 def setup():
@@ -181,7 +233,7 @@ def setup():
     motion1 = Motion("HEAD U/D")
     motion2 = Motion("NECK L/R")
     motion3 = Motion("BODY L/R")
-    motion4 = Motion("DRIVE F/R")
+    motion4 = Motion("DRIVE F/B")
     motion5 = Motion("TURN L/R")
     motion6 = Motion("PAUSE")
     motion1.addMotion(t1.canvas, 10, 10)
