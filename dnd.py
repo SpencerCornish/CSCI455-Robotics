@@ -1,5 +1,6 @@
 from tkinter import dnd, messagebox
 import tkinter as tkinter
+import move
 
 class Motion:
 
@@ -141,7 +142,6 @@ class Driver:
     def getMotionList(self):
         for i in range(1,9):
             self.motionList[i] = blocks[i].motionid
-        # print(self.motionList)
         self.getParameters(self.motionList)
 
     def getParameters(self, motionList):
@@ -182,41 +182,50 @@ class Driver:
         optionWindow.destroy()
 
     def setValues(self):
+        mover = move.Move()
         for i in range(1,9):
             if self.motionList[i] == 1:
                 if self.up[i].get() == 1:
                     print("move head up")
+                    mover.executeMotion(motionList[i], self.up[i].get(), 0)
                 else:
                     print("move head down")
+                    mover.executeMotion(motionList[i], 0, 0)
             elif self.motionList[i] == 2:
                 if self.left[i].get() == 1:
                     print("move head left")
+                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
                 else:
                     print("move head right")
+                    mover.executeMotion(motionList[i], 0, 0)
             elif self.motionList[i] == 3:
                 if self.left[i].get() == 1:
                     print("move body left")
+                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
                 else:
                     print("move body right")
+                    mover.executeMotion(motionList[i], 0, 0)
             elif self.motionList[i] == 4:
                 seconds = self.seconds[i].get()
                 if self.forward[i].get() == 1:
                     print("drive forward seconds", seconds)
+                    mover.executeMotion(motionList[i], self.forward[i].get(), seconds)
                 else:
                     print("drive backwards Seconds", seconds)
+                    mover.executeMotion(motionList[i], 0, seconds)
             elif self.motionList[i] == 5:
-                if self.left[i].get() ==1:
+                if self.left[i].get() == 1:
                     print("turn left")
+                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
                 else:
                     print("turn right")
+                    mover.executeMotion(motionList[i], 0, 0)
             elif self.motionList[i] == 6:
                 seconds = self.seconds[i].get()
                 print("sleep seconds", seconds)
+                mover.executeMotion(motionList[i], 0, seconds)
 
         self.var.set(1)
-
-    def executeMotions(self):
-        pass
 
 
 blocks = {}
