@@ -44,32 +44,21 @@ public class MainActivity extends Activity {
                     Log.e("error", "Init Failed!");
             }
         });
-    }
 
-    @Override
-    protected void onPause() {
 
-        if(tts != null){
 
-            tts.stop();
-            tts.shutdown();
-        }
-        super.onPause();
     }
 
     public void onSpeakClick(View v){
-        convertTextToSpeech();
+        if(tts == null) {
+            System.out.println("bork");
+        }
+        TextTS speak = new TextTS(tts, et.getText().toString());
+        speak.start();
     }
 
     public void onListenClick(View v){
         promptSpeechInput();
-    }
-    private void convertTextToSpeech() {
-        text = et.getText().toString();
-        if(text!=null||"".equals(text))
-        {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        }
     }
 
     private void promptSpeechInput() {
