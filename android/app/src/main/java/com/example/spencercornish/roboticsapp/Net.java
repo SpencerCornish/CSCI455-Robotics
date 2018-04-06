@@ -14,44 +14,57 @@ public class Net extends Thread {
     private String name;
     final DataInputStream dis;
     final DataOutputStream dos;
+    final String piAddr;
+    final String piPort;
     Socket s;
-    boolean isloggedin;
 
 
 
     // constructor
-    public Net(Socket s, String name,
-                         DataInputStream dis, DataOutputStream dos) {
+    public Net(Socket s, DataInputStream dis, DataOutputStream dos, String piAddr, String piPort) {
         this.dis = dis;
         this.dos = dos;
-        this.name = name;
         this.s = s;
-        this.isloggedin=true;
+        this.piAddr = piAddr;
+        this.piPort = piPort;
     }
 
     public void run() {
-        while (true) {
-            String received;
-            try {
-                // receive the string
-                received = dis.readUTF();
-                if(received != "") {
-                    System.out.println(received);
-                }
+    try {
+        dos.writeChars("Test");
+
+    } catch (Exception e) {
+        System.out.println(e.toString());
+    }
+    }
 
 
-            }
-            catch(Exception e){
+//        while (true) {
+//            String received;
+//            try {
+//                // receive the string
+//                received = dis.readUTF();
+//                if(received != "") {
+//                    System.out.println(received);
+//                }
+//
+//
+//            }
+//            catch(Exception e){
+//
+//
+//
+//            }
+//        }
 
+//    }
 
-
-            }
-        }
+    public void sendData(String ip, String port, String message) {
 
     }
 
     public void start () {
-        System.out.println("Starting Network Thread");
+        System.out.println("Starting Network Send Thread");
         if (t == null) {
             t = new Thread(this, "network");
             t.start();
