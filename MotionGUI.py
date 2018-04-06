@@ -300,7 +300,7 @@ class Driver:
                 print(self.talk[i])
                 thread = threading.Thread(target=net.startListening, args=(self.talk[i]))
                 thread.start()
-
+            #for listen
             elif self.motionList[i] == 8:
                 net.startListening(self.listen[i])
                 if self.listen[i] == "Look right":
@@ -326,6 +326,9 @@ motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/B":4, "TURN L/R":5
 
 
 def setup():
+    net = Network("", 8081)
+    recThread = threading.Thread(target=net.startListening)
+    recThread.start()
     #add root window
     root = tkinter.Tk()
     root.geometry("0x0")
