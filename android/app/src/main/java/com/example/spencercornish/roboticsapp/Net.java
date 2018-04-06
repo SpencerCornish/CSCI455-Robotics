@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Net extends Thread {
-    Activity activity;
+    MainActivity activity;
     Thread t;
     Socket socket;
     final int port;
@@ -19,7 +19,7 @@ public class Net extends Thread {
 
 
     // constructor
-    public Net(Socket socket, int port, Activity activity) {
+    public Net(Socket socket, int port, MainActivity activity) {
         this.socket = socket;
         this.activity = activity;
         this.port = port;
@@ -37,19 +37,18 @@ public class Net extends Thread {
                         System.out.println("INCOMING STRING from RPI: " + incomingString);
 
                     }
-//                    if(incomingString != null) {
-//                        if(incomingString.contains("promptForVoice")) {
-//                            activity.runOnUiThread(new Runnable() {
-//
-//                                @Override
-//                                public void run() {
-//                                    activity.p
-//                                    //activity.msg.setText(message);
-//                                }
-//                            });
-//                        }
-//
-//                    }
+                    if(incomingString != null) {
+                        if(incomingString.contains("promptForVoice")) {
+                            activity.runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    activity.promptSpeechInput();
+                                }
+                            });
+                        }
+
+                    }
                 }
             }
             catch(Exception e){

@@ -18,6 +18,7 @@ class Network:
 
         self.host = socket.gethostname()
         self.phoneIp = None
+        self.incomingVoiceText = None
 
     def startListening(self):
         print("Starting net stuff")
@@ -42,7 +43,7 @@ class Network:
             print(incomingString)
 
             print("Sendit")
-            bytesToSend = "Holy mold\r\n"
+            bytesToSend = "promptForVoice\r\n"
             self.sendMessage(bytesToSend.encode("utf8"))
 
     # def closeSocket(self):
@@ -58,6 +59,21 @@ class Network:
         self.clientSocket.sendall(message)
         self.clientSocket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         print("done sending message")
+
+    def getSpeechInput(self, inputString):
+        if self.phoneIp is None:
+            print("No Handshake yet! Yikes!")
+            return
+        bytesToSend = "promptForVoice\r\n"
+        bytesToSend = bytesToSend.encode("utf8")
+        self.sendMessage(bytesToSend)
+        while True:
+            if self.incomingVoiceText is not None:
+                if inputString in str(self.incomingVoiceText):
+                    break
+                else:
+                    self.sendMessage(bytesToSend)
+                    self.incomingVoiceText = None
 
 
 if __name__ == '__main__':

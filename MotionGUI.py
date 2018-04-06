@@ -133,7 +133,7 @@ class Motion:
 
 #class for configuring motions in blocks
 class Driver:
-    def __init__(self, canvas, root, thread):
+    def __init__(self, canvas, root, net):
         self.canvas = canvas
         self.root = root
         self.var = tkinter.IntVar()
@@ -147,7 +147,7 @@ class Driver:
         self.seconds = {}
         self.talk = {}
         self.listen = {}
-        self.thread = thread
+        self.net = net
 
     #Get motion ids for all blocks
     def getMotionList(self):
@@ -222,7 +222,8 @@ class Driver:
 
     #send commands to method in Move class that executes motions
     def setValues(self):
-        thread = threading.Thread(target=self.thread.sendMessage, args=(arg,))
+        arg = "start"
+        self.net.getSpeechInput(arg)
         mover = move.Move()
         self.var.set(1)
         for i in range(1,9):
@@ -232,39 +233,39 @@ class Driver:
                     print("move head up")
                     mover.executeMotion(self.motionList[i], self.up[i].get(), 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
                 #default down
                 else:
                     print("move head down")
                     mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
             #for NECK
             elif self.motionList[i] == 2:
                 if self.left[i].get() == 1:
                     print("move head left")
                     mover.executeMotion(self.motionList[i], self.left[i].get(), 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
                 #default right
                 else:
                     print("move head right")
                     mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
             #for BODY
             elif self.motionList[i] == 3:
                 if self.left[i].get() == 1:
                     print("move body left")
                     mover.executeMotion(self.motionList[i], self.left[i].get(), 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
                 #default right
                 else:
                     print("move body right")
                     mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
             #For DRIVE
             elif self.motionList[i] == 4:
                 seconds = self.seconds[i].get()
@@ -295,30 +296,31 @@ class Driver:
                 print("sleep seconds", seconds)
                 mover.executeMotion(self.motionList[i], 0, seconds)
             #for talk
-            '''EDIT HERE'''
+            # '''EDIT HERE'''
             ###############
             elif self.motionList[i] == 7:
                 print(str(self.talk[i].get()))
                 arg = str(self.talk[i].get())
-                thread = threading.Thread(target=self.thread.sendMessage, args=(arg,))
-                thread.start()
+                netThread = threading.Thread(target=self.net.sendMessage, args=(arg,))
+                netThread.start()
             #for listen
-            '''EDIT HERE'''
+            # '''EDIT HERE'''
             ###############
+
             elif self.motionList[i] == 8:
-                #net.startListening(self.listen[i])
-                if self.listen[i] == "Look right":
+                self.net.getSpeechInput(str(self.listen[i].get()))
+                if str(self.listen[i].get()) == "Look right":
                     print("move head right")
                     mover.executeMotion(2, 0, 0)
                     time.sleep(1)
-                    mover.reset()
-                elif self.listen[i] == "Look left":
+                    # mover.reset()
+                elif str(self.listen[i].get()) == "Look left":
                     print("move head left")
                     mover.executeMotion(2, 1, 0)
                     time.sleep(1)
-                    mover.reset()
+                    # mover.reset()
             #reset robot servos to neutral positon
-            mover.reset()
+            # mover.reset()
 
 
 #8 blocks  to drag motions into. Default is empty
