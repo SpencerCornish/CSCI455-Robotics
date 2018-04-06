@@ -3,6 +3,7 @@ import threading
 import time
 import binascii
 import socket
+
 # create a socket object
 
 
@@ -15,7 +16,6 @@ class Network:
             socket.AF_INET, socket.SOCK_STREAM)
         self.host = socket.gethostname()
         self.phoneIp = None
-        self.phonePort = 8082
 
     def startListening(self):
         print("Starting net stuff")
@@ -24,16 +24,22 @@ class Network:
         print(self.port)
         print(self.serverSocket)
         self.serverSocket.bind((self.ip, self.port))
-        self.serverSocket.listen(0)
-        self.clientSocket, self.phoneIp = self.serverSocket.accept()
-        print("Got a connection from %s" % str(self.phoneIp))
+        self.serverSocket.listen(5)
         while True:
-            incoming = self.clientSocket.recv(1024)
-            incomingString = binascii.b2a_uu(incoming)
+            self.clientSocket, self.phoneIp = self.serverSocket.accept()
+            print("Got a connection from %s" % str(self.phoneIp))
+            incomingString = ""
+            while True:
+                print("recv")
+                incoming = self.clientSocket.recv(64).decode("utf8")
+                print("incoming: " + incoming)
+                incomingString += incoming
+                break
+
             print(incomingString)
-            print(incoming)
-            msg = 'Recieved your message!' + "\r\n"
-            print(msg)
+            print("Sendit")
+            bytesToSend = "Holy mold"
+            self.sendMessage(bytesToSend.encode("utf8"))
 
     def closeSocket(self):
         self.clientSocket.close()
@@ -42,15 +48,18 @@ class Network:
         if self.phoneIp is None:
             print("No Handshake yet! Yikes!")
             return
-        self.clientSocket.send(message)
+        print("Sending a message")
+        print(self.clientSocket)
+        print(self.phoneIp)
+        self.clientSocket.sendall(message)
 
 
-# if __name__ == '__main__':
-#     net = Network("", 8081)
-#     recThread = threading.Thread(target=net.startListening,)
-#     recThread.start()
-#     recThread.join()
-#     print("thread finished...exiting")
+if __name__ == '__main__':
+    net = Network("", 8091)
+    recThread = threading.Thread(target=net.startListening,)
+    recThread.start()
+    recThread.join()
+    print("thread finished...exiting")
 
   # else:
     #     # Wait here for incoming data after we've established stuff

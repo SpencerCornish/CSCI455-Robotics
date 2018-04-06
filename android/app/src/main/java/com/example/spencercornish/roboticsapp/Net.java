@@ -26,17 +26,19 @@ public class Net extends Thread {
     }
 
     public void run() {
-        System.out.println("HELLO");
+        System.out.println("Starting");
 
             try {
-                ServerSocket socket = new ServerSocket(port);
-                Socket clientSocket = socket.accept();
 
+                ServerSocket socketAB = new ServerSocket(port);
+                while(true) {
+                    Socket clientSocket = socketAB.accept();
+                    System.out.println("Here");
 
-                DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());
-                String msg_received = DIS.readUTF();
-                System.out.println(msg_received);
-
+                    DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());
+                    String msg_received = DIS.readUTF();
+                    System.out.println("INCOMING: " + msg_received);
+                }
             }
             catch(Exception e){
                 System.out.println(e.toString());

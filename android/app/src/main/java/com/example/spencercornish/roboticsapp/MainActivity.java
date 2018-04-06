@@ -67,10 +67,15 @@ public class MainActivity extends Activity {
         promptSpeechInput();
     }
 
+    public void onSendCLick(View v) {
+        NetReply replyThread = new NetReply(socket, this, "Hello from 80");
+        replyThread.start();
+    }
+
     public void onConnectClick(View v) {
 
         try {
-            Sock socketHandler = new Sock(ip.getText().toString(), 8081);
+            Sock socketHandler = new Sock(ip.getText().toString(), 8091);
             socketHandler.start();
 
             while(true) {
@@ -85,10 +90,8 @@ public class MainActivity extends Activity {
 
         }
 
-        Net listener = new Net(socket, 8082,this);
+        Net listener = new Net(socket,8091,this);
         listener.start();
-        NetReply replyThread = new NetReply(socket, this, "Hello from 80");
-        replyThread.start();
 
 
 

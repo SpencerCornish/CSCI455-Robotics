@@ -24,13 +24,12 @@ public class NetReply extends Thread {
             OutputStream outputStream;
 
             try {
+
                 outputStream = hostThreadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
                 printStream.print(message);
-                printStream.close();
-
-
-
+                printStream.flush();
+                
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
