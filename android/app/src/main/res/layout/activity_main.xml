@@ -115,7 +115,7 @@
         android:layout_marginRight="113dp"
         android:layout_marginTop="30dp"
         android:onClick="onSendCLick"
-        android:text="Button"
+        android:text="Send Data"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ConnectButton" />
 

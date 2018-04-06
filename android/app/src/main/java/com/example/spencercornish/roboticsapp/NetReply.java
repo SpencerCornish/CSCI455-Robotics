@@ -5,6 +5,7 @@ import android.app.Activity;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 
@@ -24,16 +25,15 @@ public class NetReply extends Thread {
             OutputStream outputStream;
 
             try {
+                OutputStream os = hostThreadSocket.getOutputStream();
+                PrintWriter pw = new PrintWriter(os, true);
+                pw.println(message);
+//                pw.flush();
+//               os.flush();
 
-                outputStream = hostThreadSocket.getOutputStream();
-                PrintStream printStream = new PrintStream(outputStream);
-                printStream.print(message);
-                printStream.flush();
-                
+
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-                //message += "Something wrong! " + e.toString() + "\n";
             }
 
             activity.runOnUiThread(new Runnable() {

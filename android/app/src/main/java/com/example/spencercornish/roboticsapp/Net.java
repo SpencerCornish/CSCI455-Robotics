@@ -26,18 +26,30 @@ public class Net extends Thread {
     }
 
     public void run() {
-        System.out.println("Starting");
+        System.out.println("Starting to listen...");
 
             try {
-
-                ServerSocket socketAB = new ServerSocket(port);
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                br.reset();
                 while(true) {
-                    Socket clientSocket = socketAB.accept();
-                    System.out.println("Here");
+                    String incomingString = br.readLine();
+                    if (incomingString != null) {
+                        System.out.println("INCOMING STRING from RPI: " + incomingString);
 
-                    DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());
-                    String msg_received = DIS.readUTF();
-                    System.out.println("INCOMING: " + msg_received);
+                    }
+//                    if(incomingString != null) {
+//                        if(incomingString.contains("promptForVoice")) {
+//                            activity.runOnUiThread(new Runnable() {
+//
+//                                @Override
+//                                public void run() {
+//                                    activity.p
+//                                    //activity.msg.setText(message);
+//                                }
+//                            });
+//                        }
+//
+//                    }
                 }
             }
             catch(Exception e){
@@ -57,10 +69,3 @@ public class Net extends Thread {
         }
     }
 }
-
-
-//                    if (mc.name.equals(recipient) && mc.isloggedin==true)
-//                    {
-//                        mc.dos.writeUTF(this.name+" : "+MsgToSend);
-//                        break;
-//                    }
