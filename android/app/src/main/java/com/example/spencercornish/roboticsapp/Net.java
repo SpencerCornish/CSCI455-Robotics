@@ -30,7 +30,7 @@ public class Net extends Thread {
 
             try {
                 ServerSocket socket = new ServerSocket(port);
-                Socket clientSocket = socket.accept();       //This is blocking. It will wait.
+                Socket clientSocket = socket.accept();
 
 
                 DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());

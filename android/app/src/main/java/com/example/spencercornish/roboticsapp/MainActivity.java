@@ -1,6 +1,7 @@
 package com.example.spencercornish.roboticsapp;
 
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Locale;
 
 import android.os.Bundle;
@@ -38,17 +39,17 @@ public class MainActivity extends Activity {
 
         speechResult=findViewById(R.id.textView2);
 
-        tts=new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-
-                if(status == TextToSpeech.SUCCESS){
-                    int result=tts.setLanguage(Locale.US);
-                }
-                else
-                    Log.e("error", "Init Failed!");
-            }
-        });
+//        tts=new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
+//            @Override
+//            public void onInit(int status) {
+//
+//                if(status == TextToSpeech.SUCCESS){
+//                    int result=tts.setLanguage(Locale.US);
+//                }
+//                else
+//                    Log.e("error", "Init Failed!");
+//            }
+//        });
 
 
 
@@ -67,18 +68,28 @@ public class MainActivity extends Activity {
     }
 
     public void onConnectClick(View v) {
+
         try {
-            if(socket == null) {
-                socket = new Socket( ip.getText().toString(), 8081 );
+            Sock socketHandler = new Sock(ip.getText().toString(), 8081);
+            socketHandler.start();
+
+            while(true) {
+                if(socketHandler.getSocket() != null) {
+                    break;
+                }
             }
+            socket = socketHandler.getSocket();
 
         } catch (Exception e) {
+            System.out.println(e);
 
         }
+
         Net listener = new Net(socket, 8082,this);
         listener.start();
         NetReply replyThread = new NetReply(socket, this, "Hello from 80");
         replyThread.start();
+
 
 
     }
