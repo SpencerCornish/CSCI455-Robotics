@@ -222,7 +222,7 @@ class Driver:
 
     #send commands to method in Move class that executes motions
     def setValues(self):
-        thread = threading.Thread(target=self.thread.sendMessage, args=("start",))
+        thread = threading.Thread(target=self.thread.sendMessage, args=(arg,))
         mover = move.Move()
         self.var.set(1)
         for i in range(1,9):
@@ -295,12 +295,16 @@ class Driver:
                 print("sleep seconds", seconds)
                 mover.executeMotion(self.motionList[i], 0, seconds)
             #for talk
+            '''EDIT HERE'''
+            ###############
             elif self.motionList[i] == 7:
                 print(str(self.talk[i].get()))
                 arg = str(self.talk[i].get())
                 thread = threading.Thread(target=self.thread.sendMessage, args=(arg,))
                 thread.start()
             #for listen
+            '''EDIT HERE'''
+            ###############
             elif self.motionList[i] == 8:
                 #net.startListening(self.listen[i])
                 if self.listen[i] == "Look right":
