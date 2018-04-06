@@ -56,17 +56,54 @@
 
     <Button
         android:id="@+id/voiceCommandButton"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="132dp"
         android:layout_height="64dp"
-        android:layout_marginEnd="126dp"
-        android:layout_marginLeft="126dp"
-        android:layout_marginRight="126dp"
-        android:layout_marginStart="126dp"
-        android:layout_marginTop="19dp"
+        android:layout_marginEnd="200dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="200dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="20dp"
         android:onClick="onListenClick"
         android:text="Voice Command"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/ttsInput" />
+
+    <EditText
+        android:id="@+id/IpBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="31dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="IP"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/speakText" />
+        app:layout_constraintTop_toBottomOf="@+id/voiceCommandButton" />
+
+    <Button
+        android:id="@+id/ConnectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="14dp"
+        android:text="Connect"
+        app:layout_constraintStart_toEndOf="@+id/IpBox"
+        app:layout_constraintTop_toBottomOf="@+id/voiceCommandButton" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="31dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="14dp"
+        android:text="Not Connected"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/IpBox" />
 
 </android.support.constraint.ConstraintLayout>

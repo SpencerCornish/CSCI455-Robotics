@@ -1,5 +1,6 @@
 package com.example.spencercornish.roboticsapp;
 
+import java.net.Socket;
 import java.util.Locale;
 
 import android.os.Bundle;
@@ -21,6 +22,7 @@ public class MainActivity extends Activity {
 
     String text;
     EditText et;
+    EditText ip;
     TextToSpeech tts;
     TextView speechResult;
     private final int REQ_CODE_SPEECH_INPUT = 100;
@@ -31,6 +33,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         et=findViewById(R.id.ttsInput);
+        ip=findViewById(R.id.IpBox);
+
         speechResult=findViewById(R.id.textView2);
 
         tts=new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
@@ -59,6 +63,13 @@ public class MainActivity extends Activity {
 
     public void onListenClick(View v){
         promptSpeechInput();
+    }
+
+    public void onConnectClick(View v) {
+        Net net = new Net(8082, ip.getText().toString(), 8081 );
+        net.start();
+        net.sendData("Hello");
+
     }
 
     private void promptSpeechInput() {

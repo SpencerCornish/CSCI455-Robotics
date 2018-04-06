@@ -3,6 +3,7 @@ package com.example.spencercornish.roboticsapp;
 import android.speech.tts.TextToSpeech;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -11,34 +12,30 @@ public class Net extends Thread {
     Thread t;
     Scanner scn = new Scanner(System.in);
     private String name;
-    final DataInputStream dis;
-    final DataOutputStream dos;
     final String piAddr;
-    final String piPort;
+    final int piPort;
+    final int port;
     Socket s;
 
 
 
     // constructor
-    public Net(Socket s, DataInputStream dis, DataOutputStream dos, String piAddr, String piPort) {
-        this.dis = dis;
-        this.dos = dos;
-        this.s = s;
+    public Net(int port, String piAddr, int piPort) {
+        this.port = port;
         this.piAddr = piAddr;
         this.piPort = piPort;
     }
 
     public void run() {
         while (true) {
-            String received;
             try {
-                // receive the string
-                received = dis.readUTF();
-                if(received != "") {
-                    System.out.println(received);
-                    // If startlistening
-
-                }
+                ServerSocket socket = new ServerSocket(port);
+                Socket clientSocket = socket.accept();       //This is blocking. It will wait.
+                DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());
+                String msg_received = DIS.readUTF();
+                System.out.println(msg_received);
+                clientSocket.close();
+                socket.close();
 
 
             }
@@ -51,9 +48,9 @@ public class Net extends Thread {
 
     }
 
-    public void sendData(String ip, int port, String message) {
+    public void sendData(String message) {
         try {
-            Socket socket = new Socket(ip, port);
+            Socket socket = new Socket(piAddr, piPort);
 
             OutputStream out = socket.getOutputStream();
             PrintWriter output = new PrintWriter(out);
