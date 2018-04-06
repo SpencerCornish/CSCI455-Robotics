@@ -25,18 +25,19 @@ class Network:
         print(self.serverSocket)
         self.serverSocket.bind((self.ip, self.port))
         self.serverSocket.listen(0)
-        addr = None
+        self.clientSocket, self.phoneIp = self.serverSocket.accept()
+        print("Got a connection from %s" % str(self.phoneIp))
         while True:
-            clientSocket, addr = self.serverSocket.accept()
-            print("Got a connection from %s" % str(addr))
-            self.phoneIp = addr
-            incoming = clientSocket.recv(1024)
+            incoming = self.clientSocket.recv(1024)
             incomingString = binascii.b2a_uu(incoming)
             print(incomingString)
             print(incoming)
             msg = 'Recieved your message!' + "\r\n"
-            clientSocket.send(msg.encode('ascii'))
-            clientSocket.close()
+            print(msg)
+            self.sendMessage("HELLO AGAIN YOLO")
+
+    def closeSocket(self):
+        self.clientSocket.close()
 
     def sendMessage(self, message):
         if self.phoneIp is None:
@@ -44,10 +45,7 @@ class Network:
             return
         print("Sending string " + message + "to " +
               self.phoneIp + ":" + self.phonePort)
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((self.phoneIp, self.phonePort))
-        sock.send(message)
-        sock.close()
+        self.clientSocket.send(message)
 
 
 # if __name__ == '__main__':

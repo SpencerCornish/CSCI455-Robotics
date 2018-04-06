@@ -25,6 +25,7 @@ public class MainActivity extends Activity {
     EditText ip;
     TextToSpeech tts;
     TextView speechResult;
+    Socket socket;
     private final int REQ_CODE_SPEECH_INPUT = 100;
 
     @Override
@@ -61,14 +62,24 @@ public class MainActivity extends Activity {
         speak.start();
     }
 
-    public void onListenClick(View v){
+    public void onListenClick(View v) {
         promptSpeechInput();
     }
 
     public void onConnectClick(View v) {
-        Net net = new Net(8082, ip.getText().toString(), 8081 );
-        net.start();
-        net.sendData("Hello");
+        try {
+            if(socket == null) {
+                socket = new Socket( ip.getText().toString(), 8081 );
+            }
+
+        } catch (Exception e) {
+
+        }
+        Net listener = new Net(socket, 8082,this);
+        listener.start();
+        NetReply replyThread = new NetReply(socket, this, "Hello from 80");
+        replyThread.start();
+
 
     }
 
@@ -99,7 +110,8 @@ public class MainActivity extends Activity {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     speechResult.setText(result.get(0));
-                    // We get speech text here, send it to the PI?
+                    NetReply rep = new NetReply(socket, this, result.get(0));
+                    rep.start();
                 }
                 break;
             }
