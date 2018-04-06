@@ -1,5 +1,6 @@
 package com.example.spencercornish.roboticsapp;
 
+import android.app.Activity;
 import android.speech.tts.TextToSpeech;
 
 import java.io.*;
@@ -9,60 +10,41 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Net extends Thread {
+    Activity activity;
     Thread t;
-    Scanner scn = new Scanner(System.in);
-    private String name;
-    final String piAddr;
-    final int piPort;
+    Socket socket;
     final int port;
     Socket s;
 
 
 
     // constructor
-    public Net(int port, String piAddr, int piPort) {
+    public Net(Socket socket, int port, Activity activity) {
+        this.socket = socket;
+        this.activity = activity;
         this.port = port;
-        this.piAddr = piAddr;
-        this.piPort = piPort;
     }
 
     public void run() {
-        while (true) {
+        System.out.println("HELLO");
+
             try {
                 ServerSocket socket = new ServerSocket(port);
                 Socket clientSocket = socket.accept();       //This is blocking. It will wait.
+
+
                 DataInputStream DIS = new DataInputStream(clientSocket.getInputStream());
                 String msg_received = DIS.readUTF();
                 System.out.println(msg_received);
-                clientSocket.close();
-                socket.close();
-
 
             }
             catch(Exception e){
-
+                System.out.println(e.toString());
 
 
             }
-        }
 
-    }
 
-    public void sendData(String message) {
-        try {
-            Socket socket = new Socket(piAddr, piPort);
-
-            OutputStream out = socket.getOutputStream();
-            PrintWriter output = new PrintWriter(out);
-
-            output.print(message);
-
-            output.flush();
-            output.close();
-            socket.close();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
     }
 
     public void start () {
@@ -72,11 +54,9 @@ public class Net extends Thread {
             t.start();
         }
     }
-
-
-
-
 }
+
+
 //                    if (mc.name.equals(recipient) && mc.isloggedin==true)
 //                    {
 //                        mc.dos.writeUTF(this.name+" : "+MsgToSend);
