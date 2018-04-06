@@ -222,6 +222,7 @@ class Driver:
 
     #send commands to method in Move class that executes motions
     def setValues(self):
+        thread = threading.Thread(target=self.thread.sendMessage, args=("start",))
         mover = move.Move()
         self.var.set(1)
         for i in range(1,9):
