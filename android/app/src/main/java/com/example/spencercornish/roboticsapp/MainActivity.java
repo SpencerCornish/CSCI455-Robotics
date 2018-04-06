@@ -88,6 +88,7 @@ public class MainActivity extends Activity {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     speechResult.setText(result.get(0));
+                    // We get speech text here, send it to the PI?
                 }
                 break;
             }
