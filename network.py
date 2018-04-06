@@ -34,7 +34,6 @@ class Network:
             print(incoming)
             msg = 'Recieved your message!' + "\r\n"
             print(msg)
-            self.sendMessage("HELLO AGAIN YOLO")
 
     def closeSocket(self):
         self.clientSocket.close()
@@ -43,15 +42,13 @@ class Network:
         if self.phoneIp is None:
             print("No Handshake yet! Yikes!")
             return
-        print("Sending string " + message + "to " +
-              self.phoneIp + ":" + self.phonePort)
         self.clientSocket.send(message)
 
 
 # if __name__ == '__main__':
-    # net = Network("", 8081)
-    # recThread = threading.Thread(target=net.startListening,)
-    # recThread.start()
+#     net = Network("", 8081)
+#     recThread = threading.Thread(target=net.startListening,)
+#     recThread.start()
 #     recThread.join()
 #     print("thread finished...exiting")
 

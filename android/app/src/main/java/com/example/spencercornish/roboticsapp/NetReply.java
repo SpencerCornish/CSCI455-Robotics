@@ -29,13 +29,7 @@ public class NetReply extends Thread {
                 printStream.print(message);
                 printStream.close();
 
-                activity.runOnUiThread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        //activity.msg.setText(message);
-                    }
-                });
 
             } catch (IOException e) {
                 // TODO Auto-generated catch block
