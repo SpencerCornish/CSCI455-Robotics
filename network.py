@@ -1,6 +1,8 @@
 import socket
 import threading
 import time
+import binascii
+import socket
 # create a socket object
 
 
@@ -12,7 +14,8 @@ class Network:
         self.serverSocket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
         self.host = socket.gethostname()
-        self.clientSocket = None
+        self.phoneIp = None
+        self.phonePort = 8082
 
     def startListening(self):
         print("Starting net stuff")
@@ -24,22 +27,34 @@ class Network:
         self.serverSocket.listen()
         addr = None
         while True:
-            # establish a connection
-            self.clientSocket, addr = self.serverSocket.accept()
+            clientSocket, addr = self.serverSocket.accept()
             print("Got a connection from %s" % str(addr))
+            self.phoneIp = addr
+            incoming = clientSocket.recv(1024)
+            incomingString = binascii.b2a_uu(incoming)
+            print(incomingString)
             msg = 'Recieved your message!' + "\r\n"
-            self.clientSocket.send(msg.encode('ascii'))
+            clientSocket.send(msg.encode('ascii'))
+            clientSocket.close()
 
-    def closeClientSocket(self):
-        self.clientSocket.close()
+    def sendMessage(self, message):
+        if self.phoneIp is None:
+            print("No Handshake yet! Yikes!")
+            return
+        print("Sending string " + message + "to " +
+              self.phoneIp + ":" + self.phonePort)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self.phoneIp, self.phonePort))
+        sock.send(message)
+        sock.close()
 
 
-if __name__ == '__main__':
-    net = Network("", 8081)
-    recThread = threading.Thread(target=net.startListening)
-    recThread.start()
-    recThread.join()
-    print("thread finished...exiting")
+# if __name__ == '__main__':
+    # net = Network("", 8081)
+    # recThread = threading.Thread(target=net.startListening,)
+    # recThread.start()
+#     recThread.join()
+#     print("thread finished...exiting")
 
   # else:
     #     # Wait here for incoming data after we've established stuff

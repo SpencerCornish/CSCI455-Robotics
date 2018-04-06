@@ -2,8 +2,7 @@ package com.example.spencercornish.roboticsapp;
 
 import android.speech.tts.TextToSpeech;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -30,41 +29,47 @@ public class Net extends Thread {
     }
 
     public void run() {
-    try {
-        dos.writeChars("Test");
+        while (true) {
+            String received;
+            try {
+                // receive the string
+                received = dis.readUTF();
+                if(received != "") {
+                    System.out.println(received);
+                    // If startlistening
 
-    } catch (Exception e) {
-        System.out.println(e.toString());
+                }
+
+
+            }
+            catch(Exception e){
+
+
+
+            }
+        }
+
     }
-    }
 
+    public void sendData(String ip, int port, String message) {
+        try {
+            Socket socket = new Socket(ip, port);
 
-//        while (true) {
-//            String received;
-//            try {
-//                // receive the string
-//                received = dis.readUTF();
-//                if(received != "") {
-//                    System.out.println(received);
-//                }
-//
-//
-//            }
-//            catch(Exception e){
-//
-//
-//
-//            }
-//        }
+            OutputStream out = socket.getOutputStream();
+            PrintWriter output = new PrintWriter(out);
 
-//    }
+            output.print(message);
 
-    public void sendData(String ip, String port, String message) {
-
+            output.flush();
+            output.close();
+            socket.close();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 
     public void start () {
-        System.out.println("Starting Network Send Thread");
+        System.out.println("Starting Network Thread");
         if (t == null) {
             t = new Thread(this, "network");
             t.start();
