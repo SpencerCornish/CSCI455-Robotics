@@ -24,7 +24,7 @@ class Network:
         print(self.port)
         print(self.serverSocket)
         self.serverSocket.bind((self.ip, self.port))
-        self.serverSocket.listen()
+        self.serverSocket.listen(0)
         addr = None
         while True:
             clientSocket, addr = self.serverSocket.accept()
@@ -33,6 +33,7 @@ class Network:
             incoming = clientSocket.recv(1024)
             incomingString = binascii.b2a_uu(incoming)
             print(incomingString)
+            print(incoming)
             msg = 'Recieved your message!' + "\r\n"
             clientSocket.send(msg.encode('ascii'))
             clientSocket.close()

@@ -1,8 +1,8 @@
 from tkinter import dnd, messagebox
 import tkinter as tkinter
-#import move
+import move
 import time
-#import network
+import network
 import threading
 
 
@@ -133,7 +133,7 @@ class Motion:
 
 #class for configuring motions in blocks
 class Driver:
-    def __init__(self, canvas, root):
+    def __init__(self, canvas, root, thread):
         self.canvas = canvas
         self.root = root
         self.var = tkinter.IntVar()
@@ -147,6 +147,7 @@ class Driver:
         self.seconds = {}
         self.talk = {}
         self.listen = {}
+        self.thread = thread
 
     #Get motion ids for all blocks
     def getMotionList(self):
@@ -212,8 +213,6 @@ class Driver:
                 tkinter.Radiobutton(optionWindow, text="Look left", variable=self.listen[i], value="look left").grid(row=i-1, column=5, sticky=tkinter.W)
                 tkinter.Radiobutton(optionWindow, text="Look right", variable=self.listen[i], value="look right").grid(row=i-1, column=6, sticky=tkinter.W)
 
-
-        print(self.talk)
         okButton = tkinter.Button(optionWindow, command=self.setValues, text="START")
         cancelButton = tkinter.Button(optionWindow, command=lambda: self.var.set(1), text="CANCEL")
         okButton.grid(row=9,column=1)
@@ -224,46 +223,45 @@ class Driver:
     #send commands to method in Move class that executes motions
     def setValues(self):
         mover = move.Move()
-        net = network.Network()
         self.var.set(1)
         for i in range(1,9):
             #for HEAD
             if self.motionList[i] == 1:
                 if self.up[i].get() == 1:
                     print("move head up")
-                    mover.executeMotion(motionList[i], self.up[i].get(), 0)
+                    mover.executeMotion(self.motionList[i], self.up[i].get(), 0)
                     time.sleep(1)
                     mover.reset()
                 #default down
                 else:
                     print("move head down")
-                    mover.executeMotion(motionList[i], 0, 0)
+                    mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
                     mover.reset()
             #for NECK
             elif self.motionList[i] == 2:
                 if self.left[i].get() == 1:
                     print("move head left")
-                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
+                    mover.executeMotion(self.motionList[i], self.left[i].get(), 0)
                     time.sleep(1)
                     mover.reset()
                 #default right
                 else:
                     print("move head right")
-                    mover.executeMotion(motionList[i], 0, 0)
+                    mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
                     mover.reset()
             #for BODY
             elif self.motionList[i] == 3:
                 if self.left[i].get() == 1:
                     print("move body left")
-                    mover.executeMotion(motionList[i], self.left[i].get(), 0)
+                    mover.executeMotion(self.motionList[i], self.left[i].get(), 0)
                     time.sleep(1)
                     mover.reset()
                 #default right
                 else:
                     print("move body right")
-                    mover.executeMotion(motionList[i], 0, 0)
+                    mover.executeMotion(self.motionList[i], 0, 0)
                     time.sleep(1)
                     mover.reset()
             #For DRIVE
@@ -271,38 +269,39 @@ class Driver:
                 seconds = self.seconds[i].get()
                 if self.forward[i].get() == 1:
                     print("drive forward seconds", seconds)
-                    mover.executeMotion(motionList[i], self.forward[i].get(), seconds)
+                    mover.executeMotion(self.motionList[i], self.forward[i].get(), seconds)
                     time.sleep(1)
                 #default Backwards
                 else:
                     print("drive backwards Seconds", seconds)
-                    mover.executeMotion(motionList[i], 0, seconds)
+                    mover.executeMotion(self.motionList[i], 0, seconds)
                     time.sleep(1)
             #for TURN
             elif self.motionList[i] == 5:
                 seconds = self.seconds[i].get()
                 if self.left[i].get() == 1:
                     print("turn left for seconds", seconds)
-                    mover.executeMotion(motionList[i], self.left[i].get(), seconds)
+                    mover.executeMotion(self.motionList[i], self.left[i].get(), seconds)
                     time.sleep(1)
                 #default right
                 else:
                     print("turn right for seconds", seconds)
-                    mover.executeMotion(motionList[i], 0, seconds)
+                    mover.executeMotion(self.motionList[i], 0, seconds)
                     time.sleep(1)
             #for pause
             elif self.motionList[i] == 6:
                 seconds = self.seconds[i].get()
                 print("sleep seconds", seconds)
-                mover.executeMotion(motionList[i], 0, seconds)
+                mover.executeMotion(self.motionList[i], 0, seconds)
             #for talk
             elif self.motionList[i] == 7:
-                print(self.talk[i])
-                thread = threading.Thread(target=net.startListening, args=(self.talk[i]))
+                print(str(self.talk[i].get()))
+                arg = str(self.talk[i].get())
+                thread = threading.Thread(target=self.thread.sendMessage, args=(arg,))
                 thread.start()
             #for listen
             elif self.motionList[i] == 8:
-                net.startListening(self.listen[i])
+                #net.startListening(self.listen[i])
                 if self.listen[i] == "Look right":
                     print("move head right")
                     mover.executeMotion(2, 0, 0)
@@ -326,7 +325,7 @@ motions = {"HEAD U/D":1, "NECK L/R":2, "BODY L/R":3, "DRIVE F/B":4, "TURN L/R":5
 
 
 def setup():
-    net = Network("", 8081)
+    net = network.Network("", 8081)
     recThread = threading.Thread(target=net.startListening)
     recThread.start()
     #add root window
@@ -352,7 +351,7 @@ def setup():
     motion6.addMotion(t1.canvas, 435, 10)
     motion7.addMotion(t1.canvas, 520, 10)
     motion8.addMotion(t1.canvas, 605, 10)
-    driver = Driver(t1.canvas, root)
+    driver = Driver(t1.canvas, root, net)
     quitButton = tkinter.Button(t1.canvas, command=root.quit, text="QUIT")
     #doesn't work yet
     clearButton = tkinter.Button(t1.canvas, text="CLEAR")
