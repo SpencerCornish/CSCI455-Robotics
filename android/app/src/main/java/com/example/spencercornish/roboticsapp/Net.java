@@ -32,7 +32,7 @@ public class Net extends Thread {
                 BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //                br.reset();
                 while(true) {
-                    String incomingString = br.readLine();
+                    final String incomingString = br.readLine();
                     if (incomingString != null) {
                         System.out.println("INCOMING STRING from RPI: " + incomingString);
 
@@ -44,6 +44,17 @@ public class Net extends Thread {
                                 @Override
                                 public void run() {
                                     activity.promptSpeechInput();
+                                }
+                            });
+                        }
+                        else {
+                            activity.runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    System.out.println("Saying a string: " + incomingString);
+                                    TextTS speak = new TextTS(activity.tts, incomingString);
+                                    speak.start();
                                 }
                             });
                         }

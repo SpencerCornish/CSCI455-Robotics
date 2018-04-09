@@ -224,6 +224,8 @@ class Driver:
     def setValues(self):
         arg = "start"
         self.net.getSpeechInput(arg)
+        # recThread = threading.Thread(target=self.net.getSpeechInput, args=(arg,))
+        # recThread.start()   
         mover = move.Move()
         self.var.set(1)
         for i in range(1,9):
@@ -300,8 +302,10 @@ class Driver:
             ###############
             elif self.motionList[i] == 7:
                 print(str(self.talk[i].get()))
-                arg = str(self.talk[i].get())
-                netThread = threading.Thread(target=self.net.sendMessage, args=(arg,))
+                arg = str(self.talk[i].get()) + "\r\n"
+
+                netThread = threading.Thread(
+                    target=self.net.sendMessage, args=(arg.encode("utf8"),))
                 netThread.start()
             #for listen
             # '''EDIT HERE'''
@@ -309,12 +313,13 @@ class Driver:
 
             elif self.motionList[i] == 8:
                 self.net.getSpeechInput(str(self.listen[i].get()))
-                if str(self.listen[i].get()) == "Look right":
+                print("316: " + str(self.listen[i].get()))
+                if "right" in str(self.listen[i].get()).lower():
                     print("move head right")
                     mover.executeMotion(2, 0, 0)
                     time.sleep(1)
                     # mover.reset()
-                elif str(self.listen[i].get()) == "Look left":
+                elif "left" in str(self.listen[i].get()).lower():
                     print("move head left")
                     mover.executeMotion(2, 1, 0)
                     time.sleep(1)
