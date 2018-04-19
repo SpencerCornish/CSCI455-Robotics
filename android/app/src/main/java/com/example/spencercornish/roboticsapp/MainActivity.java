@@ -39,17 +39,17 @@ public class MainActivity extends Activity {
 
         speechResult=findViewById(R.id.textView2);
 
-//        tts=new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
-//            @Override
-//            public void onInit(int status) {
-//
-//                if(status == TextToSpeech.SUCCESS){
-//                    int result=tts.setLanguage(Locale.US);
-//                }
-//                else
-//                    Log.e("error", "Init Failed!");
-//            }
-//        });
+        tts=new TextToSpeech(MainActivity.this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+                if(status == TextToSpeech.SUCCESS){
+                    int result=tts.setLanguage(Locale.US);
+                }
+                else
+                    Log.e("error", "Init Failed!");
+            }
+        });
 
 
 
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
     public void onConnectClick(View v) {
 
         try {
-            Sock socketHandler = new Sock(ip.getText().toString(), 8090);
+            Sock socketHandler = new Sock(ip.getText().toString(), 8081);
             socketHandler.start();
 
             while(true) {

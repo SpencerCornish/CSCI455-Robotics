@@ -80,7 +80,7 @@
         android:layout_marginTop="14dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="IP"
+        android:text="10.200.62.12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/voiceCommandButton" />
 

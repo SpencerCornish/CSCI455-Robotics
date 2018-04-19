@@ -26,7 +26,7 @@ class Network:
         print(self.ip)
         print(self.port)
         print(self.serverSocket)
-        self.serverSocket.bind((self.host, self.port))
+        self.serverSocket.bind(("10.200.62.12", self.port))
         self.serverSocket.listen(5)
         self.clientSocket = None
         while True:
@@ -34,17 +34,17 @@ class Network:
                 print("Waiting for a client...")
                 self.clientSocket, self.phoneIp = self.serverSocket.accept()
                 print("Got a connection from %s" % str(self.phoneIp))
-
+                
             incomingString = ""
             print("recv")
             incoming = self.clientSocket.recv(32).decode("utf8")
             print("incoming: " + incoming)
             incomingString += incoming
             print(incomingString)
+            self.incomingVoiceText = incomingString
 
-            print("Sendit")
-            bytesToSend = "promptForVoice\r\n"
-            self.sendMessage(bytesToSend.encode("utf8"))
+            # bytesToSend = "promptForVoice\r\n"
+            # self.sendMessage(bytesToSend.encode("utf8"))
 
     # def closeSocket(self):
         # self.clientSocket.close()
@@ -64,12 +64,15 @@ class Network:
         if self.phoneIp is None:
             print("No Handshake yet! Yikes!")
             return
+        self.incomingVoiceText = None
         bytesToSend = "promptForVoice\r\n"
         bytesToSend = bytesToSend.encode("utf8")
         self.sendMessage(bytesToSend)
         while True:
             if self.incomingVoiceText is not None:
-                if inputString in str(self.incomingVoiceText):
+                print("A: " + inputString.lower())
+                print("B: " + self.incomingVoiceText.lower())
+                if inputString.lower() in str(self.incomingVoiceText.lower()):
                     break
                 else:
                     self.sendMessage(bytesToSend)

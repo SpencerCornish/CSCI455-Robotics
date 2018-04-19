@@ -28,8 +28,8 @@ public class NetReply extends Thread {
                 OutputStream os = hostThreadSocket.getOutputStream();
                 PrintWriter pw = new PrintWriter(os, true);
                 pw.println(message);
-//                pw.flush();
-//               os.flush();
+                pw.flush();
+                os.flush();
 
 
             } catch (IOException e) {
