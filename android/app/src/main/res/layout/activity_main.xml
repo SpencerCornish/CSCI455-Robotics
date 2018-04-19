@@ -7,116 +7,74 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="384dp"
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="TTS:"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/speakText"
-        android:layout_width="88dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginTop="9dp"
-        android:onClick="onSpeakClick"
-        android:text="Speak"
+        android:layout_marginBottom="33dp"
+        android:layout_marginEnd="102dp"
+        android:layout_marginLeft="103dp"
+        android:layout_marginRight="102dp"
+        android:layout_marginStart="103dp"
+        android:text="Team 10"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ttsInput" />
-
-    <EditText
-        android:id="@+id/ttsInput"
-        android:layout_width="295dp"
-        android:layout_height="112dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="49dp"
-        android:layout_marginStart="49dp"
-        android:layout_marginTop="57dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginStart="100dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ttsInput" />
-
-    <Button
-        android:id="@+id/voiceCommandButton"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="132dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="200dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="200dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="20dp"
-        android:onClick="onListenClick"
-        android:text="Voice Command"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/ttsInput" />
+        tools:layout_editor_absoluteY="235dp" />
 
     <EditText
         android:id="@+id/IpBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="31dp"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="128dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="10.200.62.12"
+        app:layout_constraintEnd_toStartOf="@+id/ConnectButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/voiceCommandButton" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ConnectButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="14dp"
+        android:layout_width="89dp"
+        android:layout_height="51dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="84dp"
         android:onClick="onConnectClick"
         android:text="Connect"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/IpBox"
-        app:layout_constraintTop_toBottomOf="@+id/voiceCommandButton" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="31dp"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="14dp"
-        android:text="Not Connected"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IpBox" />
-
-    <Button
-        android:id="@+id/sendButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="113dp"
-        android:layout_marginRight="113dp"
-        android:layout_marginTop="30dp"
-        android:onClick="onSendCLick"
-        android:text="Send Data"
+        android:layout_marginEnd="102dp"
+        android:layout_marginLeft="103dp"
+        android:layout_marginRight="102dp"
+        android:layout_marginStart="103dp"
+        android:layout_marginTop="16dp"
+        android:text="Welcome to THE GAME"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ConnectButton" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

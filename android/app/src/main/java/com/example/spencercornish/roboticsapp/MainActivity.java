@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        et=findViewById(R.id.ttsInput);
+        //et=findViewById(R.id.ttsInput);
         ip=findViewById(R.id.IpBox);
 
         speechResult=findViewById(R.id.textView2);
@@ -73,25 +73,32 @@ public class MainActivity extends Activity {
     }
 
     public void onConnectClick(View v) {
+        String ipInput = ip.getText().toString();
 
-        try {
-            Sock socketHandler = new Sock(ip.getText().toString(), 8081);
-            socketHandler.start();
+        if(!ipInput.equals("")) {
+            try {
+                Sock socketHandler = new Sock(ipInput, 8081);
+                socketHandler.start();
 
-            while(true) {
-                if(socketHandler.getSocket() != null) {
-                    break;
+                while(true) {
+                    if(socketHandler.getSocket() != null) {
+                        break;
+                    }
                 }
+                socket = socketHandler.getSocket();
+
+            } catch (Exception e) {
+                System.out.println(e);
+
             }
-            socket = socketHandler.getSocket();
 
-        } catch (Exception e) {
-            System.out.println(e);
-
+            Net listener = new Net(socket,socket.getPort(),this);
+            listener.start();
         }
+        Intent myIntent = new Intent(this, MoveActivity.class);
+        startActivity(myIntent);
 
-        Net listener = new Net(socket,socket.getPort(),this);
-        listener.start();
+
 
 
 
