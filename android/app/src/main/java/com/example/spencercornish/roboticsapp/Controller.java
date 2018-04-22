@@ -5,7 +5,7 @@ import java.lang.Math;
 import java.util.Scanner;
 
 public class Controller {
-    public static enum activity {
+    public enum activity {
         Start,
         End,
         Recharge,
@@ -81,8 +81,8 @@ public class Controller {
         }
 
         //take turns
-        while(endGame == false && dead == false){
-            if(hasRun == true){
+        while(!endGame && !dead){
+            if(hasRun){
                 player.move("Random");
                 currentLoc = map[player.xCoord][player.yCoord];
                 currentLoc.visited = true;
@@ -91,18 +91,18 @@ public class Controller {
             }
             else{
                 startTurn();
-                if(hasRun == false){
+                if(!hasRun){
                     executeAction();
                 }
             }
         }
 
 
-        if(endGame == true){
+        if(endGame){
             //end game as a win
             System.out.println("End Game. You win");
         }
-        else if(dead == true){
+        else if(dead){
             //end game as a loss
             System.out.println("End Game. You died");
         }
