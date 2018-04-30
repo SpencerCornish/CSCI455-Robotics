@@ -5,6 +5,7 @@ public class Node {
     public String name;
     public String[] directions;
     public boolean visited = false;
+    public boolean hasKey = false;
 
     public Node(Controller.activity Activity, String name, String[] directions){
         this.Activity = Activity;

@@ -61,11 +61,16 @@ public class Controller {
         currentLoc = map[player.xCoord][player.yCoord];
         currentLoc.visited = true;
         activity act = currentLoc.Activity;
+        boolean setKey = false;
         if(act != activity.Start) {
             for (int a = 0; a < 3; a++) {
                 for (int b = 0; b < 3; b++) {
-                    if (map[a][b].Activity == activity.Start && map[a][b] != currentLoc) {
+                    if(map[a][b].Activity == activity.Start && map[a][b] != currentLoc) {
                         map[a][b].Activity = act;
+                    }
+                    else if(map[a][b].Activity == activity.SFoe && setKey == false){
+                        map[a][b].hasKey = true;
+                        setKey = true;
                     }
                 }
             }
@@ -301,12 +306,12 @@ public class Controller {
     public boolean canFinish(){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if(map[i][j].visited == false){
-                    return false;
+                if(map[i][j].hasKey == true){
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean runOrFight(){
@@ -336,7 +341,9 @@ public class Controller {
         }
     }
 
-
+    public void setKey(){
+        for
+    }
 
     public void shuffleArray(int[] a) {
         int n = a.length;
