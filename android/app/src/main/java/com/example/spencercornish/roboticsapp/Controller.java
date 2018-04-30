@@ -169,7 +169,16 @@ public class Controller extends Thread {
             }
             if(worked == false) {
                 setQuestionText("Which direction?");
-                speak("Which direction? You can go " + currentLoc.directions.toString().concat("or"));
+                String dirs = "";
+                for ( int i = 0; i < currentLoc.directions.length; i++) {
+                    if (i == currentLoc.directions.length-1) {
+                        dirs = dirs + currentLoc.directions[i];
+
+                    } else {
+                        dirs = dirs + currentLoc.directions[i] + " or ";
+                    }
+                }
+                speak("Which direction? You can go " + dirs);
                 setOptionsText(Arrays.asList(currentLoc.directions));
                 startListening();
             }

@@ -59,8 +59,10 @@ public class MoveActivity extends Activity implements RecognitionListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move);
-        String ipInput = "10.200.62.12";
 
+
+        //String ipInput = "10.200.62.12";
+        String ipInput = "";
 
         Net listener;
         if(!ipInput.equals("")) {
