@@ -9,6 +9,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class MoveActivity extends Activity implements RecognitionListener {
 
@@ -32,6 +34,8 @@ public class MoveActivity extends Activity implements RecognitionListener {
     String questionContentText;
     List<String> optionsContentText;
 
+    String lastSpoken;
+
 
     Button optionsDebug;
     Button questionDebug;
@@ -39,6 +43,9 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
     private Intent speechIntent;
     private SpeechRecognizer speechRecognizer;
+
+    TextToSpeech tts;
+
 
 
 
@@ -72,6 +79,18 @@ public class MoveActivity extends Activity implements RecognitionListener {
         }
         setOptionsText(optionsContentText);
 
+
+        tts=new TextToSpeech(MoveActivity.this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+
+                if(status == TextToSpeech.SUCCESS){
+                    int result=tts.setLanguage(Locale.US);
+                }
+                else
+                    Log.e("error", "Init Failed!");
+            }
+        });
 
 
 
@@ -108,6 +127,17 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
 
 
+    public void onSpeakDebugClick(View v){
+        speak("hello there, General Kenobi!");
+    }
+
+    public void speak(String toSay) {
+        if(tts == null) {
+            System.out.println("bork");
+        }
+        TextTS speak = new TextTS(tts, toSay);
+        speak.start();
+    }
 
 
 
@@ -154,7 +184,7 @@ public class MoveActivity extends Activity implements RecognitionListener {
     }
 
     public void startSpeechRecognition() {
-
+        lastSpoken = "";
         speechRecognizer.startListening(speechIntent);
     }
 
@@ -208,8 +238,7 @@ public class MoveActivity extends Activity implements RecognitionListener {
         String spokenSentence = matches.get(0);
 
         Toast.makeText(getApplicationContext(), spokenSentence, Toast.LENGTH_SHORT);
-        //gameController.recievedVoiceData(spokenSentence);
-        // TODO
+        lastSpoken = spokenSentence;
     }
 
     @Override
