@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
     Controller gameController;
     ImageView imageBox;
+
 
     TextView questionText;
     TextView optionsText;
@@ -45,6 +47,8 @@ public class MoveActivity extends Activity implements RecognitionListener {
     private Intent speechIntent;
     private SpeechRecognizer speechRecognizer;
 
+    Socket socket;
+
     TextToSpeech tts;
 
 
@@ -55,6 +59,42 @@ public class MoveActivity extends Activity implements RecognitionListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move);
+        String ipInput = "10.200.62.12";
+
+
+        Net listener;
+        if(!ipInput.equals("")) {
+            try {
+                Sock socketHandler = new Sock(ipInput, 8081);
+                socketHandler.start();
+
+                while(true) {
+                    if(socketHandler.getSocket() != null) {
+                        break;
+                    }
+                }
+                socket = socketHandler.getSocket();
+                listener = new Net(socket, socket.getPort(),this);
+                listener.start();
+
+            } catch (Exception e) {
+                listener = null;
+                System.out.println(e);
+                Toast.makeText(getApplicationContext(), "Unable to connect: " + e.toString(), Toast.LENGTH_SHORT);
+                return;
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
 
         requestRecordAudioPermission();
 
@@ -126,9 +166,9 @@ public class MoveActivity extends Activity implements RecognitionListener {
     }
 
 
-
-    public void onSpeakDebugClick(View v){
-        speak("hello there, General Kenobi!");
+    public void moveRobot(String message) {
+        NetReply reply = new NetReply(socket, this, message);
+        reply.start();
     }
 
     public void speak(String toSay) {
@@ -137,21 +177,6 @@ public class MoveActivity extends Activity implements RecognitionListener {
         }
         TextTS speak = new TextTS(tts, toSay);
         speak.start();
-    }
-
-
-
-    public void onImageDebugClick(View v) {
-        setImageBox(R.drawable.ss);
-    }
-
-    public void onOptionsDebugClick(View v) {
-        setOptionsText(Arrays.asList("Option 1", "Option 2", "Option 3", "Option 4"));
-
-    }
-
-    public void onQuestionDebugCLick(View v) {
-        setQuestionText("Hello world!!!!1");
     }
 
 
@@ -208,6 +233,10 @@ public class MoveActivity extends Activity implements RecognitionListener {
             System.out.println("Error Setting optionsText:" + e.toString());
             e.printStackTrace();
         }
+    }
+
+    public void moveForward(int seconds) {
+
     }
 
 

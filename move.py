@@ -108,6 +108,18 @@ class Move:
         self.servo.setTarget(turn_target,5000)
         time.sleep(seconds)
         self.servo.setTarget(turn_target,neutral)
+
+    def fight(self, seconds):
+        # TODO: Update me
+        self.servo.setTarget(turn_target, 5000)
+        time.sleep(seconds)
+        self.servo.setTarget(turn_target, neutral)
+
+    def recharge(self, seconds):
+        # TODO: Update me
+        self.servo.setTarget(turn_target, 5000)
+        time.sleep(seconds)
+        self.servo.setTarget(turn_target, neutral)
     #set all servos/motors to neutral
     def space_pressed(self):
         for i in range(5):

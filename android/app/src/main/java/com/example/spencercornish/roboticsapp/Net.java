@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Net extends Thread {
-    MainActivity activity;
+    MoveActivity activity;
     Thread t;
     Socket socket;
     final int port;
@@ -19,7 +19,7 @@ public class Net extends Thread {
 
 
     // constructor
-    public Net(Socket socket, int port, MainActivity activity) {
+    public Net(Socket socket, int port, MoveActivity activity) {
         this.socket = socket;
         this.activity = activity;
         this.port = port;

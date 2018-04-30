@@ -49,30 +49,6 @@ public class MainActivity extends Activity {
 
     public void onConnectClick(View v) {
         String ipInput = ip.getText().toString();
-        Net listener;
-        if(!ipInput.equals("")) {
-            try {
-                Sock socketHandler = new Sock(ipInput, 8081);
-                socketHandler.start();
-
-                while(true) {
-                    if(socketHandler.getSocket() != null) {
-                        break;
-                    }
-                }
-                socket = socketHandler.getSocket();
-                listener = new Net(socket,socket.getPort(),this);
-                listener.start();
-
-            } catch (Exception e) {
-                listener = null;
-                System.out.println(e);
-                Toast.makeText(getApplicationContext(), "Unable to connect: " + e.toString(), Toast.LENGTH_SHORT);
-                return;
-            }
-
-
-        }
 
         Intent myIntent = new Intent(this, MoveActivity.class);
         startActivity(myIntent);
