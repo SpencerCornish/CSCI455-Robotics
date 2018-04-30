@@ -43,7 +43,7 @@ public class Net extends Thread {
 
                                 @Override
                                 public void run() {
-                                    activity.promptSpeechInput();
+                               //     activity.promptSpeechInput();
                                 }
                             });
                         }
@@ -53,8 +53,8 @@ public class Net extends Thread {
                                 @Override
                                 public void run() {
                                     System.out.println("Saying a string: " + incomingString);
-                                    TextTS speak = new TextTS(activity.tts, incomingString);
-                                    speak.start();
+                                   // TextTS speak = new TextTS(activity.tts, incomingString);
+                                  //  speak.start();
                                 }
                             });
                         }

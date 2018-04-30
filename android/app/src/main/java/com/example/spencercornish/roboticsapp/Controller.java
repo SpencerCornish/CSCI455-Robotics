@@ -1,11 +1,21 @@
 package com.example.spencercornish.roboticsapp;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.lang.Math;
 import java.util.Scanner;
+import android.app.Activity;
+import android.speech.tts.TextToSpeech;
+import android.view.View;
 
-public class Controller {
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+public class Controller extends Thread {
     public enum activity {
         Start,
         End,
@@ -13,6 +23,7 @@ public class Controller {
         WFoe,
         SFoe
     }
+    Thread t;
     public Player player;
     public Node[][] map = new Node[3][3];
     public Node currentLoc;
@@ -22,7 +33,7 @@ public class Controller {
     public MoveActivity moveActivity;
 
 
-    public Controller(MoveActivity moveActivity){
+    public Controller(MoveActivity moveActivity, ){
         this.moveActivity = moveActivity;
         int[] startpos = {0,0,2,2};
         shuffleArray(startpos);
@@ -76,11 +87,274 @@ public class Controller {
             }
             currentLoc.Activity = activity.Start;
         }
-        moveActivity.setQuestionText("Current node: " + currentLoc);
+        // setQuestionText("Current node: " + currentLoc);
+    }
+
+    public void run() {
+        System.out.println("Starting game controller");
+        while (!endGame && !dead) {
+            if (hasRun) {
+                player.move("Random");
+                currentLoc = map[player.xCoord][player.yCoord];
+                currentLoc.visited = true;
+                hasRun = false;
+            } else {
+                startTurn();
+                if (!hasRun) {
+                    executeAction();
+                }
+            }
+        }
+
+        if (endGame) {
+            //end game as a win
+            setImage(R.drawable.ss);
+            setQuestionText("End of Game. You Win!!");
+        } else if (dead) {
+            //end game as a loss
+            setImage(R.drawable.lose);
+            setQuestionText("End of Game. You died.");
+        }
+        System.out.println("Ending game controller thread");
+    }
+
+
+    public void start () {
+        System.out.println("Starting Controller Thread");
+        if (t == null) {
+            t = new Thread(this, "Controller");
+
+            t = new Thread(this, "controller");
+
+            t.start();
+        }
     }
 
 
 
+
+    public void takeTurn(){
+        //take turns
+       
+    }
+
+    public void startTurn(){
+        //send currentLoc.directions to be spoken
+        //Ask for direction
+//        Scanner scanner = new Scanner(System.in);
+//
+//        System.out.println("Current node: " + currentLoc.name);
+
+        setImage(R.drawable.questionmark);
+        setQuestionText("Which direction?");
+        setOptionsText(Arrays.asList(currentLoc.directions));
+        startListening();
+
+        boolean worked = false;
+        while(true){
+            if(moveActivity.lastSpoken == null) continue;
+            if(moveActivity.lastSpoken == "") continue;
+            for(int i = 0; i < currentLoc.directions.length; i++){
+                if(moveActivity.lastSpoken.toLowerCase().equals(currentLoc.directions[i].toLowerCase())){
+                    worked = true;
+                    //move robot that direction;
+                    player.move(moveActivity.lastSpoken);
+
+                }
+            }
+            if(worked == false) {
+                setQuestionText("Which direction?");
+                setOptionsText(Arrays.asList(currentLoc.directions));
+                startListening();
+            }
+            else {
+                break;
+            }
+        }
+
+        currentLoc = map[player.xCoord][player.yCoord];
+        currentLoc.visited = true;
+        setQuestionText("New current node: " + currentLoc.name);
+        sleepThread(3000);
+        //System.out.println("New current node: " + currentLoc.name);
+
+    }
+
+    public void executeAction(){
+        System.out.println("Activity: " + currentLoc.Activity);
+        //recharge
+        if(currentLoc.Activity == activity.Recharge){
+            player.recharge();
+            hasRun = false;
+            //System.out.println("Recharged. HP: "+ player.HP);
+            setImage(R.drawable.recharge);
+            setQuestionText("Recharged. HP: " + player.HP);
+            sleepThread(2000);
+        }
+        //weak foe && strong foe
+        else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe){
+            boolean fight = runOrFight();
+            //if run
+            if(!fight){
+                setImage(R.drawable.runaway);
+                boolean successful = player.run();
+                //if successful run
+                if(successful){
+                    //System.out.println("You ran");
+                    setQuestionText("You ran away successfully");
+                    hasRun = true;
+                    sleepThread(3000);
+
+                }
+                else{
+                    //System.out.println("You didn't run away");
+                    setQuestionText("You didn't run away successfully");
+                    fight = true;
+                    sleepThread(3000);
+                }
+            }
+            //if fight
+            if(fight){
+                setImage(R.drawable.fight);
+                player.fight(currentLoc.Activity);
+                setQuestionText("You fought. HP: " + player.HP);
+                sleepThread(3000);
+                //System.out.println("You fought. HP: " + player.HP);
+                hasRun = false;
+                //if dead
+                if(player.HP <= 0){
+                    dead = true;
+                }
+
+            }
+        }
+        //if at end
+        else if(currentLoc.Activity == activity.End){
+            if(canFinish()){
+                //end game with a win
+                endGame = true;
+            }
+            else{
+                setQuestionText("You can't end yet");
+                sleepThread(3000);
+
+                //System.out.println("You can't end yet");
+                //tell player they can't end yet
+            }
+        }
+
+    }
+
+
+    public boolean canFinish(){
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(map[i][j].hasKey == true){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean runOrFight(){
+        //ask user run or run or run or fight
+        //if run return false
+        //if fight return true
+        //Scanner scanner = new Scanner(System.in);
+
+        //System.out.println("Run or Fight: ");
+        setImage(R.drawable.questionmark);
+        setQuestionText("Run or Fight?");
+        setOptionsText(Arrays.asList("Run", "Fight"));
+        startListening();
+
+        //String input = scanner.next();
+        startListening();
+        while(true) {
+            if (moveActivity.lastSpoken == "") continue;
+            if (moveActivity.lastSpoken.toLowerCase().equals("run")) {
+                return false;
+            } else if (moveActivity.lastSpoken.toLowerCase().equals("fight")) {
+                return true;
+
+            } else {
+                startListening();
+            }
+        }
+    }
+
+    public void setKey(){
+        for
+    }
+
+    public void shuffleArray(int[] a) {
+        int n = a.length;
+        Random random = new Random();
+        random.nextInt();
+        for (int i = 0; i < n; i++) {
+            int change = i + random.nextInt(n - i);
+            swap(a, i, change);
+        }
+    }
+
+    private void swap(int[] a, int i, int change) {
+        int helper = a[i];
+        a[i] = a[change];
+        a[change] = helper;
+    }
+
+    private void setImage(final int id) {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.setImageBox(id);
+            }
+        });
+
+    }
+
+    private void setQuestionText(final String id) {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.setQuestionText(id);
+            }
+        });
+
+    }
+
+    private void setOptionsText(final List<String> id) {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.setOptionsText(id);
+            }
+        });
+
+    }
+
+    private void startListening() {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.startSpeechRecognition();
+            }
+        });
+    }
+
+    private void speak(final String toSay) {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.speak(toSay);
+            }
+        });
+    }
+
+    private void sleepThread(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {
+            System.out.println("Interrupted");
+        }
+    }
+}
 
 //    public static void main(String[] args){
 //        int[] startpos = {0,0,2,2};
@@ -172,193 +446,3 @@ public class Controller {
 //
 //
 //    }
-
-
-
-    public void takeATurn(){
-        //take turns
-        while(!endGame && !dead){
-            if(hasRun){
-                player.move("Random");
-                currentLoc = map[player.xCoord][player.yCoord];
-                currentLoc.visited = true;
-                hasRun = false;
-            }
-            else{
-                startTurn();
-                if(!hasRun){
-                    executeAction();
-                }
-            }
-        }
-
-
-        if(endGame){
-            //end game as a win
-            moveActivity.setImageBox(555);
-            moveActivity.setQuestionText("End of Game. You Win!!");
-        }
-        else if(dead){
-            //end game as a loss
-            moveActivity.setImageBox(555);
-            moveActivity.setQuestionText("End of Game. You died.");
-        }
-
-    }
-
-    public void startTurn(){
-        //send currentLoc.directions to be spoken
-        //Ask for direction
-//        Scanner scanner = new Scanner(System.in);
-//
-//        System.out.println("Current node: " + currentLoc.name);
-        moveActivity.setImageBox(555);
-        moveActivity.setQuestionText("Which direction?");
-        moveActivity.setOptionsText(Arrays.asList(currentLoc.directions));
-        moveActivity.startSpeechRecognition();
-        boolean worked = false;
-        while(true){
-            if(moveActivity.lastSpoken == "") continue;
-            for(int i = 0; i < currentLoc.directions.length; i++){
-                if(moveActivity.lastSpoken.toLowerCase().equals(currentLoc.directions[i].toLowerCase())){
-                    worked = true;
-                    //move robot that direction;
-                    player.move(lastSpoken);
-
-                }
-            }
-            if(worked == false) {
-                moveActivity.setQuestionText("Which direction?");
-                moveActivity.setOptionsText(Arrays.asList(currentLoc.directions));
-                moveActivity.startSpeechRecognition();
-            }
-            else {
-                break;
-            }
-        }
-
-        currentLoc = map[player.xCoord][player.yCoord];
-        currentLoc.visited = true;
-        moveActivity.setQuestionText("New current node: " + currentLoc.name);
-        //System.out.println("New current node: " + currentLoc.name);
-
-    }
-
-    public void executeAction(){
-        System.out.println("Activity: " + currentLoc.Activity);
-        //recharge
-        if(currentLoc.Activity == activity.Recharge){
-            player.recharge();
-            hasRun = false;
-            //System.out.println("Recharged. HP: "+ player.HP);
-            moveActivity.setImageBox(555);
-            moveActivity.setQuestionText("Recharged. HP: " + player.HP);
-        }
-        //weak foe && strong foe
-        else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe){
-            boolean fight = runOrFight();
-            //if run
-            if(fight == false){
-                moveActivity.setImageBox(555);
-                boolean successful = player.run();
-                //if successful run
-                if(successful == true){
-                    //System.out.println("You ran");
-                    moveActivity.setQuestionText("You ran away successfully");
-                    hasRun = true;
-                }
-                else{
-                    //System.out.println("You didn't run away");
-                    moveActivity.setQuestionText("You didn't run away successfully");
-                    fight = true;
-                }
-            }
-            //if fight
-            if(fight == true){
-                moveActivity.setImageBox(555);
-                player.fight(currentLoc.Activity);
-                moveActivity.setQuestionText("You fought. HP: " + player.HP);
-                //System.out.println("You fought. HP: " + player.HP);
-                hasRun = false;
-                //if dead
-                if(player.HP <= 0){
-                    dead = true;
-                }
-
-            }
-        }
-        //if at end
-        else if(currentLoc.Activity == activity.End){
-            if(canFinish()){
-                //end game with a win
-                endGame = true;
-            }
-            else{
-                moveActivity.setQuestionText("You can't end yet");
-                //System.out.println("You can't end yet");
-                //tell player they can't end yet
-            }
-        }
-
-    }
-
-
-    public boolean canFinish(){
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(map[i][j].hasKey == true){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean runOrFight(){
-        //ask user run or run or run or fight
-        //if run return false
-        //if fight return true
-        //Scanner scanner = new Scanner(System.in);
-
-        //System.out.println("Run or Fight: ");
-        moveActivity.setImageBox(555);
-        moveActivity.setQuestionText("Run or Fight?");
-        moveActivity.setOptionsText(Arrays.asList("Run", "Fight"));
-        moveActivity.startSpeechRecognition();
-
-        //String input = scanner.next();
-        moveActivity.startSpeechRecognition();
-        while(true) {
-            if (moveActivity.lastSpoken == "") continue;
-            if (moveActivity.toLowerCase().equals("run")) {
-                return false;
-            } else if (moveActivity.lastSpoken.toLowerCase.equals("fight")) {
-                return true;
-
-            } else {
-                moveActivity.startSpeechRecognition();
-            }
-        }
-    }
-
-    public void setKey(){
-        for
-    }
-
-    public void shuffleArray(int[] a) {
-        int n = a.length;
-        Random random = new Random();
-        random.nextInt();
-        for (int i = 0; i < n; i++) {
-            int change = i + random.nextInt(n - i);
-            swap(a, i, change);
-        }
-    }
-
-    private void swap(int[] a, int i, int change) {
-        int helper = a[i];
-        a[i] = a[change];
-        a[change] = helper;
-    }
-
-}
