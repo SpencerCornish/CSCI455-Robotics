@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+
 public class MoveActivity extends Activity implements RecognitionListener {
 
     Controller gameController;
@@ -104,10 +105,9 @@ public class MoveActivity extends Activity implements RecognitionListener {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this);
 
-        //gameController = new Controller(this);
+        gameController = new Controller(this);
 
-        // In a thread:
-        //gameController.begin();
+        gameController.start();
 
 
 
