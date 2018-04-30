@@ -31,9 +31,10 @@ public class Controller extends Thread {
     public boolean dead = false;
     public boolean hasRun = false;
     public MoveActivity moveActivity;
+    public int numMoves = 30;
 
 
-    public Controller(MoveActivity moveActivity, ){
+    public Controller(MoveActivity moveActivity){
         this.moveActivity = moveActivity;
         int[] startpos = {0,0,2,2};
         shuffleArray(startpos);
@@ -72,11 +73,16 @@ public class Controller extends Thread {
         currentLoc = map[player.xCoord][player.yCoord];
         currentLoc.visited = true;
         activity act = currentLoc.Activity;
+        boolean setKey = false;
         if(act != activity.Start) {
             for (int a = 0; a < 3; a++) {
                 for (int b = 0; b < 3; b++) {
-                    if (map[a][b].Activity == activity.Start && map[a][b] != currentLoc) {
+                    if(map[a][b].Activity == activity.Start && map[a][b] != currentLoc) {
                         map[a][b].Activity = act;
+                    }
+                    else if(map[a][b].Activity == activity.SFoe && setKey == false){
+                        map[a][b].hasKey = true;
+                        setKey = true;
                     }
                 }
             }
@@ -87,17 +93,20 @@ public class Controller extends Thread {
 
     public void run() {
         System.out.println("Starting game controller");
-        while (!endGame && !dead) {
+        boolean sayLoc = true;
+        while (!endGame && !dead && numMoves > 0) {
             if (hasRun) {
                 player.move("Random");
                 currentLoc = map[player.xCoord][player.yCoord];
                 currentLoc.visited = true;
                 hasRun = false;
+                sayLoc = false;
             } else {
-                startTurn();
+                startTurn(sayLoc);
                 if (!hasRun) {
                     executeAction();
                 }
+                sayLoc = true;
             }
         }
 
@@ -105,7 +114,7 @@ public class Controller extends Thread {
             //end game as a win
             setImage(R.drawable.ss);
             setQuestionText("End of Game. You Win!!");
-        } else if (dead) {
+        } else if (dead || numMoves == 0) {
             //end game as a loss
             setImage(R.drawable.lose);
             setQuestionText("End of Game. You died.");
@@ -133,7 +142,7 @@ public class Controller extends Thread {
        
     }
 
-    public void startTurn(){
+    public void startTurn(boolean sayLoc){
         //send currentLoc.directions to be spoken
         //Ask for direction
 //        Scanner scanner = new Scanner(System.in);
@@ -154,11 +163,13 @@ public class Controller extends Thread {
                     worked = true;
                     //move robot that direction;
                     player.move(moveActivity.lastSpoken);
+                    numMoves -= 1;
 
                 }
             }
             if(worked == false) {
                 setQuestionText("Which direction?");
+                speak("Which direction? You can go " + currentLoc.directions.toString().concat("or"));
                 setOptionsText(Arrays.asList(currentLoc.directions));
                 startListening();
             }
@@ -169,8 +180,11 @@ public class Controller extends Thread {
 
         currentLoc = map[player.xCoord][player.yCoord];
         currentLoc.visited = true;
-        setQuestionText("New current node: " + currentLoc.name);
-        sleepThread(3000);
+        if(sayLoc) {
+            setQuestionText("New current node: " + currentLoc.name);
+            speak("New current node is " + currentLoc.name);
+            sleepThread(3000);
+        }
         //System.out.println("New current node: " + currentLoc.name);
 
     }
@@ -184,10 +198,22 @@ public class Controller extends Thread {
             //System.out.println("Recharged. HP: "+ player.HP);
             setImage(R.drawable.recharge);
             setQuestionText("Recharged. HP: " + player.HP);
+            speak("Recharged. HP is " + player.HP);
             sleepThread(2000);
         }
         //weak foe && strong foe
         else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe){
+            setImage(R.drawable.fight);
+            player.fight(currentLoc.Activity);
+            setQuestionText("You fought. HP: " + player.HP);
+            speak("You fought. HP is now " + player.HP);
+            sleepThread(3000);
+            //System.out.println("You fought. HP: " + player.HP);
+            hasRun = false;
+            //if dead
+            if(player.HP <= 0){
+                dead = true;
+            }
             boolean fight = runOrFight();
             //if run
             if(!fight){
@@ -197,6 +223,7 @@ public class Controller extends Thread {
                 if(successful){
                     //System.out.println("You ran");
                     setQuestionText("You ran away successfully");
+                    speak("You ran away successfully.");
                     hasRun = true;
                     sleepThread(3000);
 
@@ -204,6 +231,7 @@ public class Controller extends Thread {
                 else{
                     //System.out.println("You didn't run away");
                     setQuestionText("You didn't run away successfully");
+                    speak("You didn't run away successfully.");
                     fight = true;
                     sleepThread(3000);
                 }
@@ -213,6 +241,7 @@ public class Controller extends Thread {
                 setImage(R.drawable.fight);
                 player.fight(currentLoc.Activity);
                 setQuestionText("You fought. HP: " + player.HP);
+                speak("You fought. HP is now " + player.HP);
                 sleepThread(3000);
                 //System.out.println("You fought. HP: " + player.HP);
                 hasRun = false;
@@ -231,6 +260,7 @@ public class Controller extends Thread {
             }
             else{
                 setQuestionText("You can't end yet");
+                speak("You can't end yet. You don't have the key.");
                 sleepThread(3000);
 
                 //System.out.println("You can't end yet");
@@ -244,12 +274,12 @@ public class Controller extends Thread {
     public boolean canFinish(){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if(map[i][j].visited == false){
-                    return false;
+                if(map[i][j].hasKey == true){
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean runOrFight(){
@@ -261,6 +291,7 @@ public class Controller extends Thread {
         //System.out.println("Run or Fight: ");
         setImage(R.drawable.questionmark);
         setQuestionText("Run or Fight?");
+        speak("Run or fight?");
         setOptionsText(Arrays.asList("Run", "Fight"));
         startListening();
 
@@ -278,8 +309,6 @@ public class Controller extends Thread {
             }
         }
     }
-
-
 
     public void shuffleArray(int[] a) {
         int n = a.length;
