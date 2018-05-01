@@ -94,7 +94,6 @@ public class Controller extends Thread {
             }
             currentLoc.Activity = activity.Start;
         }
-        // setQuestionText("Current node: " + currentLoc);
     }
 
     public void run() {
@@ -143,23 +142,23 @@ public class Controller extends Thread {
     }
 
 
-
-
-    public void takeTurn(){
-        //take turns
-
-    }
-
     public void startTurn(boolean sayLoc){
         //send currentLoc.directions to be spoken
         //Ask for direction
-//        Scanner scanner = new Scanner(System.in);
-//
-//        System.out.println("Current node: " + currentLoc.name);
+        String dirs = "";
+        for ( int i = 0; i < currentLoc.directions.length; i++) {
+            if (i == currentLoc.directions.length-1) {
+                dirs = dirs + currentLoc.directions[i];
 
+            } else {
+                dirs = dirs + currentLoc.directions[i] + " or ";
+            }
+        }
         setImage(R.drawable.questionmark);
         setQuestionText("Which direction?");
         setOptionsText(Arrays.asList(currentLoc.directions));
+        speak("Which direction? You can go " + dirs);
+        sleepThread(4000);
         startListening();
 
         boolean worked = false;
@@ -177,15 +176,6 @@ public class Controller extends Thread {
             }
             if(worked == false) {
                 setQuestionText("Which direction?");
-                String dirs = "";
-                for ( int i = 0; i < currentLoc.directions.length; i++) {
-                    if (i == currentLoc.directions.length-1) {
-                        dirs = dirs + currentLoc.directions[i];
-
-                    } else {
-                        dirs = dirs + currentLoc.directions[i] + " or ";
-                    }
-                }
                 speak("Which direction? You can go " + dirs);
                 setOptionsText(Arrays.asList(currentLoc.directions));
                 sleepThread(4000);
@@ -204,8 +194,39 @@ public class Controller extends Thread {
             sleepThread(4000);
         }
         //System.out.println("New current node: " + currentLoc.name);
-
     }
+
+    public void fightFoe(){
+        setImage(R.drawable.fight);
+        if (currentLoc.HP <= 0){
+            setQuestionText("Foe already defeated.");
+            speak("Foe already defeated.");
+            sleepThread(4000);
+        }
+        else{
+            if (currentLoc.Activity == activity.SFoe) {
+                if (currentLoc.HP >= 10) {
+                    player.fight(currentLoc.Activity);
+                    currentLoc.HP = currentLoc.HP - 10;
+                    setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                    speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                    sleepThread(4000);
+                }
+            }
+            if (currentLoc.Activity == activity.WFoe) {
+                if (currentLoc.HP >= 5) {
+                    player.fight(currentLoc.Activity);
+                    currentLoc.HP = currentLoc.HP - 5;
+                    setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                    speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                    sleepThread(4000);
+                }
+            }
+        }
+    }
+
+
+
 
     public void executeAction(){
         System.out.println("Activity: " + currentLoc.Activity);
@@ -221,106 +242,41 @@ public class Controller extends Thread {
         }
         //weak foe && strong foe
         else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe) {
-            boolean defeated = false;
-            if (currentLoc.HP < 0) {
-                defeated = true;
-            }
-            setImage(R.drawable.fight);
-            if (currentLoc.HP > 0) {
-                player.fight(currentLoc.Activity);
-                if (currentLoc.Activity == activity.SFoe) {
-                    if (currentLoc.HP >= 10) {
-                        currentLoc.HP = currentLoc.HP - 10;
-                        setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                        speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                        sleepThread(4000);
-                    } else {
-                        currentLoc.HP = 0;
-                        defeated = true;
-                    }
-                } else {
-                    if (currentLoc.HP >= 5) {
-                        currentLoc.HP = currentLoc.HP - 5;
-                        setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                        speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                        sleepThread(4000);
-                    } else {
-                        currentLoc.HP = 0;
-                        defeated = true;
-                    }
-                }
-            } else {
-                setQuestionText("Foe already defeated.");
-                speak("Foe already defeated.");
-                sleepThread(4000);
-            }
+            fightFoe();
             hasRun = false;
             //if dead
             if (player.HP <= 0) {
                 dead = true;
             }
-            if (!defeated) {
 
+            boolean fight = runOrFight();
+            //if run
+            if (!fight) {
+                setImage(R.drawable.runaway);
+                boolean successful = player.run();
+                //if successful run
+                if (successful) {
+                    //System.out.println("You ran");
+                    setQuestionText("You ran away successfully");
+                    speak("You ran away successfully.");
+                    hasRun = true;
+                    sleepThread(4000);
 
-                boolean fight = runOrFight();
-                //if run
-                if (!fight) {
-                    setImage(R.drawable.runaway);
-                    boolean successful = player.run();
-                    //if successful run
-                    if (successful) {
-                        //System.out.println("You ran");
-                        setQuestionText("You ran away successfully");
-                        speak("You ran away successfully.");
-                        hasRun = true;
-                        sleepThread(4000);
-
-                    } else {
-                        //System.out.println("You didn't run away");
-                        setQuestionText("You didn't run away successfully");
-                        speak("You didn't run away successfully.");
-                        fight = true;
-                        sleepThread(4000);
-                    }
+                } else {
+                    //System.out.println("You didn't run away");
+                    setQuestionText("You didn't run away successfully");
+                    speak("You didn't run away successfully.");
+                    fight = true;
+                    sleepThread(4000);
                 }
-                //if fight
-                if (fight) {
-                    setImage(R.drawable.fight);
-                    if (currentLoc.HP > 0) {
-                        player.fight(currentLoc.Activity);
-                        if (currentLoc.Activity == activity.SFoe) {
-                            if (currentLoc.HP >= 10) {
-                                currentLoc.HP = currentLoc.HP - 10;
-                                setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                                speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                                sleepThread(4000);
-                            } else {
-                                currentLoc.HP = 0;
-                            }
-                        } else {
-                            if (currentLoc.HP >= 5) {
-                                currentLoc.HP = currentLoc.HP - 5;
-                                setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                                speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                                sleepThread(4000);
-                            } else {
-                                currentLoc.HP = 0;
-                            }
-                        }
-                    } else {
-                        setQuestionText("Foe already defeated.");
-                        speak("Foe already defeated.");
-                        sleepThread(4000);
-                    }
-
-
-                    //System.out.println("You fought. HP: " + player.HP);
-                    hasRun = false;
-                    //if dead
-                    if (player.HP <= 0) {
-                        dead = true;
-                    }
-
+            }
+            //if fight
+            if (fight) {
+                fightFoe();
+                hasRun = false;
+                //if dead
+                if (player.HP <= 0) {
+                    dead = true;
                 }
             }
         }
