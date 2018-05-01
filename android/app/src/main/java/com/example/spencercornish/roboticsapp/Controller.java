@@ -145,7 +145,7 @@ public class Controller extends Thread {
 
     public void takeTurn(){
         //take turns
-       
+
     }
 
     public void startTurn(boolean sayLoc){
@@ -175,7 +175,16 @@ public class Controller extends Thread {
             }
             if(worked == false) {
                 setQuestionText("Which direction?");
-                speak("Which direction? I see a path " + currentLoc.directions.toString().concat("or"));
+                String dirs = "";
+                for ( int i = 0; i < currentLoc.directions.length; i++) {
+                    if (i == currentLoc.directions.length-1) {
+                        dirs = dirs + currentLoc.directions[i];
+
+                    } else {
+                        dirs = dirs + currentLoc.directions[i] + " or ";
+                    }
+                }
+                speak("Which direction? You can go " + dirs);
                 setOptionsText(Arrays.asList(currentLoc.directions));
                 sleepThread(2000);
                 startListening();
