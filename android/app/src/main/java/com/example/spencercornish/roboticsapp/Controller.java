@@ -249,34 +249,47 @@ public class Controller extends Thread {
                 dead = true;
             }
 
-            boolean fight = runOrFight();
-            //if run
-            if (!fight) {
-                setImage(R.drawable.runaway);
-                boolean successful = player.run();
-                //if successful run
-                if (successful) {
-                    //System.out.println("You ran");
-                    setQuestionText("You ran away successfully");
-                    speak("You ran away successfully.");
-                    hasRun = true;
+            while (true) {
+                if(currentLoc.HP <=0){
+                    setQuestionText("Foe already defeated.");
+                    speak("Foe already defeated.");
                     sleepThread(4000);
-
-                } else {
-                    //System.out.println("You didn't run away");
-                    setQuestionText("You didn't run away successfully");
-                    speak("You didn't run away successfully.");
-                    fight = true;
-                    sleepThread(4000);
+                    break;
                 }
-            }
-            //if fight
-            if (fight) {
-                fightFoe();
-                hasRun = false;
-                //if dead
-                if (player.HP <= 0) {
-                    dead = true;
+                boolean fight = runOrFight();
+                //if run
+                if (!fight) {
+                    setImage(R.drawable.runaway);
+                    boolean successful = player.run();
+                    //if successful run
+                    if (successful) {
+                        //System.out.println("You ran");
+                        setQuestionText("You ran away successfully");
+                        speak("You ran away successfully.");
+                        hasRun = true;
+                        sleepThread(4000);
+                        break;
+
+                    } else {
+                        //System.out.println("You didn't run away");
+                        setQuestionText("You didn't run away successfully");
+                        speak("You didn't run away successfully.");
+                        fight = true;
+                        sleepThread(4000);
+                    }
+                }
+                //if fight
+                if (fight) {
+                    fightFoe();
+                    hasRun = false;
+                    //if dead
+                    if (player.HP <= 0) {
+                        dead = true;
+                        break;
+                    }
+                    if(currentLoc.HP <= 0){
+                        break;
+                    }
                 }
             }
         }
