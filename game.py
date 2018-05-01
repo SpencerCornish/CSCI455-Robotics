@@ -7,12 +7,13 @@ import threading
 
 def setup():
     mover = move.Move()
+    mover.fight()
+    mover.recharge()
     net = network.Network("", 8081)
+    
     recThread = threading.Thread(target=net.startListening)
     recThread.start()
-    mover.fight(2)
-    time.sleep(1000)
-    mover.recharge(2)
+
     while True:
         if net.incomingVoiceText is not None:
             if net.incomingVoiceText is "forward":
@@ -22,13 +23,15 @@ def setup():
             if net.incomingVoiceText is "left":
                 mover.turn_left(1)
                 mover.one_forward(1)
+                mover.turn_right(1)
             if net.incomingVoiceText is "right":
                 mover.turn_right(1)
                 mover.one_forward(1)
+                mover.turn_left(1)
             if net.incomingVoiceText is "fight":
-                mover.fight(2)
+                mover.fight()
             if net.incomingVoiceText is "recharge":
-                mover.recharge(2)
+                mover.recharge()
 
 if __name__ == '__main__':
     setup()

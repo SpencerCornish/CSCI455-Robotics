@@ -110,17 +110,57 @@ class Move:
         time.sleep(seconds)
         self.servo.setTarget(turn_target,neutral)
 
-    def fight(self, seconds):
-        # TODO: Update me
-        self.servo.setTarget(7, 5000)
-        time.sleep(seconds)
-        self.servo.setTarget(7, neutral)
+    def fight(self):
+        self.servo.setTarget(head_target, head_angle)
+        self.servo.setTarget(6, 3000)
+        self.servo.setTarget(12, 3000)
+        time.sleep(.5)
+        self.servo.setTarget(head_target, neutral)
+        self.servo.setTarget(head_target, 3000)
+        self.servo.setTarget(6, 8000)
+        self.servo.setTarget(12, 8000)
+        time.sleep(.5)
+        self.servo.setTarget(head_target, neutral)
+        self.servo.setTarget(head_target, head_angle)
+        self.servo.setTarget(6, 3000)
+        self.servo.setTarget(12, 3000)
+        time.sleep(.5)
+        self.servo.setTarget(head_target, neutral)
+        self.servo.setTarget(head_target, 3000)
+        self.servo.setTarget(6, 8000)
+        self.servo.setTarget(12, 8000)
+        time.sleep(.5)
+        self.servo.setTarget(head_target, neutral)
+        self.servo.setTarget(head_target, head_angle)
+        self.servo.setTarget(6, neutral)
+        self.servo.setTarget(12, neutral)
 
-    def recharge(self, seconds):
-        # TODO: Update me
-        self.servo.setTarget(8, 5000)
-        time.sleep(seconds)
-        self.servo.setTarget(8, neutral)
+    def recharge(self):
+        self.servo.setTarget(neck_target, head_angle)
+        self.servo.setTarget(9, 3000)
+        self.servo.setTarget(16, 3000)
+        time.sleep(.5)
+        self.servo.setTarget(neck_target, neutral)
+        self.servo.setTarget(neck_target, 3000)
+        self.servo.setTarget(9, 8000)
+        self.servo.setTarget(16, 8000)
+        time.sleep(.5)
+        self.servo.setTarget(neck_target, neutral)
+        self.servo.setTarget(neck_target, head_angle)
+        self.servo.setTarget(9, 3000)
+        self.servo.setTarget(16, 3000)
+        time.sleep(.5)
+        self.servo.setTarget(neck_target, neutral)
+        self.servo.setTarget(neck_target, 3000)
+        self.servo.setTarget(9, 8000)
+        self.servo.setTarget(16, 8000)
+        time.sleep(.5)
+        self.servo.setTarget(neck_target, neutral)
+        self.servo.setTarget(neck_target, head_angle)
+        self.servo.setTarget(9, neutral)
+        self.servo.setTarget(16, neutral)
+
+
     #set all servos/motors to neutral
     def space_pressed(self):
         for i in range(5):
