@@ -80,14 +80,14 @@ public class Controller extends Thread {
                     if(map[a][b].Activity == activity.Start && map[a][b] != currentLoc) {
                         map[a][b].Activity = act;
                     }
-                    else if(map[a][b].Activity == activity.SFoe && setKey == false){
+                    if(map[a][b].Activity == activity.SFoe && setKey == false){
                         map[a][b].hasKey = true;
                         setKey = true;
                     }
-                    else if(map[a][b].Activity ==activity.SFoe){
+                    if(map[a][b].Activity == activity.SFoe){
                         map[a][b].HP = 20;
                     }
-                    else if(map[a][b].Activity ==activity.WFoe){
+                    if(map[a][b].Activity == activity.WFoe){
                         map[a][b].HP = 10;
                     }
                 }
@@ -120,10 +120,12 @@ public class Controller extends Thread {
             //end game as a win
             setImage(R.drawable.ss);
             setQuestionText("End of Game. You Win!!");
+            setOptionsText(Arrays.asList(""));
         } else if (dead || numMoves == 0) {
             //end game as a loss
             setImage(R.drawable.lose);
             setQuestionText("End of Game. You died.");
+            setOptionsText(Arrays.asList(""));
         }
         System.out.println("Ending game controller thread");
     }
@@ -165,7 +167,7 @@ public class Controller extends Thread {
             if(moveActivity.lastSpoken == null) continue;
             if(moveActivity.lastSpoken == "") continue;
             for(int i = 0; i < currentLoc.directions.length; i++){
-                if(moveActivity.lastSpoken.toLowerCase().equals(currentLoc.directions[i].toLowerCase())){
+                if(moveActivity.lastSpoken.toLowerCase().contains(currentLoc.directions[i].toLowerCase())){
                     worked = true;
                     //move robot that direction;
                     player.move(moveActivity.lastSpoken);
@@ -186,7 +188,7 @@ public class Controller extends Thread {
                 }
                 speak("Which direction? You can go " + dirs);
                 setOptionsText(Arrays.asList(currentLoc.directions));
-                sleepThread(2000);
+                sleepThread(4000);
                 startListening();
             }
             else {
@@ -199,7 +201,7 @@ public class Controller extends Thread {
         if(sayLoc) {
             setQuestionText("New current node: " + currentLoc.name);
             speak("New current node is " + currentLoc.name);
-            sleepThread(3000);
+            sleepThread(4000);
         }
         //System.out.println("New current node: " + currentLoc.name);
 
@@ -215,110 +217,111 @@ public class Controller extends Thread {
             setImage(R.drawable.recharge);
             setQuestionText("Recharged. HP: " + player.HP);
             speak("Recharged. HP is " + player.HP);
-            sleepThread(2000);
+            sleepThread(4000);
         }
         //weak foe && strong foe
-        else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe){
+        else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe) {
+            boolean defeated = false;
+            if (currentLoc.HP < 0) {
+                defeated = true;
+            }
             setImage(R.drawable.fight);
-            if(currentLoc.HP > 0) {
+            if (currentLoc.HP > 0) {
                 player.fight(currentLoc.Activity);
-                if(currentLoc.Activity == activity.SFoe){
-                    if(currentLoc.HP >= 10) {
+                if (currentLoc.Activity == activity.SFoe) {
+                    if (currentLoc.HP >= 10) {
                         currentLoc.HP = currentLoc.HP - 10;
                         setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                         speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
                         sleepThread(4000);
-                    }
-                    else{
+                    } else {
                         currentLoc.HP = 0;
+                        defeated = true;
                     }
-                }
-                else{
-                    if(currentLoc.HP >= 5) {
+                } else {
+                    if (currentLoc.HP >= 5) {
                         currentLoc.HP = currentLoc.HP - 5;
                         setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                         speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
                         sleepThread(4000);
-                    }
-                    else{
+                    } else {
                         currentLoc.HP = 0;
+                        defeated = true;
                     }
                 }
-            }
-            else{
+            } else {
                 setQuestionText("Foe already defeated.");
                 speak("Foe already defeated.");
-                sleepThread(2000);
+                sleepThread(4000);
             }
             hasRun = false;
             //if dead
-            if(player.HP <= 0){
+            if (player.HP <= 0) {
                 dead = true;
             }
-            boolean fight = runOrFight();
-            //if run
-            if(!fight){
-                setImage(R.drawable.runaway);
-                boolean successful = player.run();
-                //if successful run
-                if(successful){
-                    //System.out.println("You ran");
-                    setQuestionText("You ran away successfully");
-                    speak("You ran away successfully.");
-                    hasRun = true;
-                    sleepThread(3000);
+            if (!defeated) {
 
-                }
-                else{
-                    //System.out.println("You didn't run away");
-                    setQuestionText("You didn't run away successfully");
-                    speak("You didn't run away successfully.");
-                    fight = true;
-                    sleepThread(3000);
-                }
-            }
-            //if fight
-            if(fight){
-                setImage(R.drawable.fight);
-                if(currentLoc.HP > 0) {
-                    player.fight(currentLoc.Activity);
-                    if(currentLoc.Activity == activity.SFoe){
-                        if(currentLoc.HP >= 10) {
-                            currentLoc.HP = currentLoc.HP - 10;
-                            setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                            speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                            sleepThread(4000);
-                        }
-                        else{
-                            currentLoc.HP = 0;
-                        }
-                    }
-                    else{
-                        if(currentLoc.HP >= 5) {
-                            currentLoc.HP = currentLoc.HP - 5;
-                            setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                            speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                            sleepThread(4000);
-                        }
-                        else{
-                            currentLoc.HP = 0;
-                        }
+
+                boolean fight = runOrFight();
+                //if run
+                if (!fight) {
+                    setImage(R.drawable.runaway);
+                    boolean successful = player.run();
+                    //if successful run
+                    if (successful) {
+                        //System.out.println("You ran");
+                        setQuestionText("You ran away successfully");
+                        speak("You ran away successfully.");
+                        hasRun = true;
+                        sleepThread(4000);
+
+                    } else {
+                        //System.out.println("You didn't run away");
+                        setQuestionText("You didn't run away successfully");
+                        speak("You didn't run away successfully.");
+                        fight = true;
+                        sleepThread(4000);
                     }
                 }
-                else{
-                    setQuestionText("Foe already defeated.");
-                    speak("Foe already defeated.");
-                    sleepThread(2000);
+                //if fight
+                if (fight) {
+                    setImage(R.drawable.fight);
+                    if (currentLoc.HP > 0) {
+                        player.fight(currentLoc.Activity);
+                        if (currentLoc.Activity == activity.SFoe) {
+                            if (currentLoc.HP >= 10) {
+                                currentLoc.HP = currentLoc.HP - 10;
+                                setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                                speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                                sleepThread(4000);
+                            } else {
+                                currentLoc.HP = 0;
+                            }
+                        } else {
+                            if (currentLoc.HP >= 5) {
+                                currentLoc.HP = currentLoc.HP - 5;
+                                setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                                speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                                sleepThread(4000);
+                            } else {
+                                currentLoc.HP = 0;
+                            }
+                        }
+                    } else {
+                        setQuestionText("Foe already defeated.");
+                        speak("Foe already defeated.");
+                        sleepThread(4000);
+                    }
+
+
+                    //System.out.println("You fought. HP: " + player.HP);
+                    hasRun = false;
+                    //if dead
+                    if (player.HP <= 0) {
+                        dead = true;
+                    }
+
                 }
-
-
-                //System.out.println("You fought. HP: " + player.HP);
-                hasRun = false;
-                //if dead
-                if(player.HP <= 0){
-                    dead = true;
-                }
-
             }
         }
         //if at end
@@ -330,7 +333,7 @@ public class Controller extends Thread {
             else{
                 setQuestionText("You can't end yet. You don't have the key");
                 speak("I see a box of gold. You don't have the key.");
-                sleepThread(3000);
+                sleepThread(4000);
 
                 //System.out.println("You can't end yet");
                 //tell player they can't end yet
@@ -362,16 +365,17 @@ public class Controller extends Thread {
         setQuestionText("Run or Fight?");
         speak("Run or fight?");
         setOptionsText(Arrays.asList("Run", "Fight"));
-        sleepThread(2000);
+        sleepThread(4000);
         startListening();
 
         //String input = scanner.next();
         startListening();
         while(true) {
-            if (moveActivity.lastSpoken == "") continue;
-            if (moveActivity.lastSpoken.toLowerCase().equals("run")) {
+            if(moveActivity.lastSpoken == null) continue;
+            if(moveActivity.lastSpoken == "") continue;
+            if (moveActivity.lastSpoken.toLowerCase().contains("run")) {
                 return false;
-            } else if (moveActivity.lastSpoken.toLowerCase().equals("fight")) {
+            } else if (moveActivity.lastSpoken.toLowerCase().contains("fight")) {
                 return true;
 
             } else {

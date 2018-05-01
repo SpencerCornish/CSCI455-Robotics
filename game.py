@@ -10,6 +10,9 @@ def setup():
     net = network.Network("", 8081)
     recThread = threading.Thread(target=net.startListening)
     recThread.start()
+    mover.fight(2)
+    time.sleep(1000)
+    mover.recharge(2)
     while True:
         if net.incomingVoiceText is not None:
             if net.incomingVoiceText is "forward":

@@ -48,12 +48,13 @@ class Move:
         #self.root = tk.Tk()
         os.system('xset r off')
         #set targets to neutral
-        for i in range(5):
+        for i in range(17):
             self.servo.setTarget(i,neutral)
             self.servo.setSpeed(i,0)
             self.servo.setAccel(i,60)
 
         self.servo.setAccel(drive_target, 6)
+
     #move head up
     def w_pressed(self):
         global head_angle
@@ -111,15 +112,15 @@ class Move:
 
     def fight(self, seconds):
         # TODO: Update me
-        self.servo.setTarget(turn_target, 5000)
+        self.servo.setTarget(7, 5000)
         time.sleep(seconds)
-        self.servo.setTarget(turn_target, neutral)
+        self.servo.setTarget(7, neutral)
 
     def recharge(self, seconds):
         # TODO: Update me
-        self.servo.setTarget(turn_target, 5000)
+        self.servo.setTarget(8, 5000)
         time.sleep(seconds)
-        self.servo.setTarget(turn_target, neutral)
+        self.servo.setTarget(8, neutral)
     #set all servos/motors to neutral
     def space_pressed(self):
         for i in range(5):

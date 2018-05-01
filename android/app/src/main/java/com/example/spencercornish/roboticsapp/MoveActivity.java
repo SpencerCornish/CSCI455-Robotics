@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,11 +40,6 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
     String lastSpoken;
 
-
-    Button optionsDebug;
-    Button questionDebug;
-    Button imageDebug;
-
     private Intent speechIntent;
     private SpeechRecognizer speechRecognizer;
 
@@ -57,6 +53,7 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move);
 
@@ -104,10 +101,6 @@ public class MoveActivity extends Activity implements RecognitionListener {
         questionText = findViewById(R.id.questionText);
         optionsText = findViewById(R.id.optionsText);
         imageBox = findViewById(R.id.imageBox);
-
-        optionsDebug = findViewById(R.id.optionsDebug);
-        questionDebug = findViewById(R.id.questionDebug);
-        imageDebug = findViewById(R.id.imageDebug2);
 
 
         // Reestablish strings and stuffs
