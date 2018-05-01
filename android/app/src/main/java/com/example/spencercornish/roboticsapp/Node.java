@@ -6,10 +6,13 @@ public class Node {
     public String[] directions;
     public boolean visited = false;
     public boolean hasKey = false;
+    public int HP;
 
     public Node(Controller.activity Activity, String name, String[] directions){
         this.Activity = Activity;
         this.name = name;
         this.directions = directions;
     }
+
+
 }

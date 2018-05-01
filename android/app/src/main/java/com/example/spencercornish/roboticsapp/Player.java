@@ -28,7 +28,7 @@ public class Player {
 
     public boolean fight(Controller.activity foe){
         if(foe == Controller.activity.WFoe){
-            HP = (int)(HP * .22);
+            HP = (int)(HP * .8);
         }
         else if(foe == Controller.activity.SFoe){
             if(HP < 20){
@@ -36,7 +36,7 @@ public class Player {
                 return false;
             }
             else {
-                HP = (int) (HP * .9);
+                HP = (int) (HP * .2);
                 return true;
             }
         }
