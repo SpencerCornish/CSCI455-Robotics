@@ -98,20 +98,16 @@ public class Controller extends Thread {
 
     public void run() {
         System.out.println("Starting game controller");
-        boolean sayLoc = true;
         while (!endGame && !dead && numMoves > 0) {
             if (hasRun) {
                 player.move("Random");
+                numMoves--;
                 currentLoc = map[player.xCoord][player.yCoord];
                 currentLoc.visited = true;
                 hasRun = false;
-                sayLoc = false;
             } else {
-                startTurn(sayLoc);
-                if (!hasRun) {
-                    executeAction();
-                }
-                sayLoc = true;
+                startTurn();
+                executeAction();
             }
         }
 
@@ -142,7 +138,7 @@ public class Controller extends Thread {
     }
 
 
-    public void startTurn(boolean sayLoc){
+    public void startTurn(){
         //send currentLoc.directions to be spoken
         //Ask for direction
         String dirs = "";
@@ -168,17 +164,17 @@ public class Controller extends Thread {
             for(int i = 0; i < currentLoc.directions.length; i++){
                 if(moveActivity.lastSpoken.toLowerCase().contains(currentLoc.directions[i].toLowerCase())){
                     worked = true;
-                    //move robot that direction;
+                    //move robot that direction
                     move(moveActivity.lastSpoken.toLowerCase());
                     player.move(moveActivity.lastSpoken);
-                    numMoves -= 1;
+                    numMoves--;
 
                 }
             }
-            if(worked == false) {
+            if(!worked) {
                 setQuestionText("Which direction?");
-                speak("Which direction? You can go " + dirs);
                 setOptionsText(Arrays.asList(currentLoc.directions));
+                speak("Which direction? You can go " + dirs);
                 sleepThread(4000);
                 startListening();
             }
@@ -189,11 +185,10 @@ public class Controller extends Thread {
 
         currentLoc = map[player.xCoord][player.yCoord];
         currentLoc.visited = true;
-        if(sayLoc) {
-            setQuestionText("New current node: " + currentLoc.name);
-            speak("New current node is " + currentLoc.name);
-            sleepThread(4000);
-        }
+        setQuestionText("New current node: " + currentLoc.name);
+        speak("New current node is " + currentLoc.name);
+        sleepThread(4000);
+
         //System.out.println("New current node: " + currentLoc.name);
     }
 
@@ -204,26 +199,22 @@ public class Controller extends Thread {
             speak("Foe already defeated.");
             sleepThread(4000);
         }
-        else{
-            if (currentLoc.Activity == activity.SFoe) {
-                if (currentLoc.HP >= 10) {
-                    player.fight(currentLoc.Activity);
-                    move("fight");
-                    currentLoc.HP = currentLoc.HP - 10;
-                    setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                    speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                    sleepThread(4000);
-                }
+        else {
+            if (currentLoc.Activity == activity.SFoe && currentLoc.HP >= 10) {
+                  player.fight(currentLoc.Activity);
+                  move("fight");
+                  currentLoc.HP = currentLoc.HP - 10;
+                  setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                  speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                  sleepThread(4000);
             }
-            if (currentLoc.Activity == activity.WFoe) {
-                if (currentLoc.HP >= 5) {
-                    player.fight(currentLoc.Activity);
-                    move("fight");
-                    currentLoc.HP = currentLoc.HP - 5;
-                    setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
-                    speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                    sleepThread(4000);
-                }
+            else if (currentLoc.Activity == activity.WFoe && currentLoc.HP >= 5) {
+                  player.fight(currentLoc.Activity);
+                  move("fight");
+                  currentLoc.HP = currentLoc.HP - 5;
+                  setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
+                  speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
+                  sleepThread(4000);
             }
         }
     }
@@ -246,56 +237,63 @@ public class Controller extends Thread {
         }
         //weak foe && strong foe
         else if(currentLoc.Activity == activity.WFoe || currentLoc.Activity == activity.SFoe) {
+
             fightFoe();
+            if(currentLoc.hasKey == true){
+              speak("You found the key!");
+              sleepThread(2000);
+            }
             hasRun = false;
             //if dead
             if (player.HP <= 0) {
                 dead = true;
             }
 
-            while (true) {
-                if(currentLoc.HP <=0){
-                    setQuestionText("Foe already defeated.");
-                    speak("Foe already defeated.");
-                    sleepThread(4000);
-                    break;
-                }
-                boolean fight = runOrFight();
-                //if run
-                if (!fight) {
-                    setImage(R.drawable.runaway);
-                    boolean successful = player.run();
-                    //if successful run
-                    if (successful) {
-                        //System.out.println("You ran");
-                        setQuestionText("You ran away successfully");
-                        speak("You ran away successfully.");
-                        hasRun = true;
-                        sleepThread(4000);
-                        break;
+            else {
+              while (true) {
+                  if(currentLoc.HP <=0){
+                      setQuestionText("You defeated the foe.");
+                      speak("You defeated the foe.");
+                      sleepThread(4000);
+                      break;
+                  }
+                  boolean fight = runOrFight();
+                  //if run
+                  if (!fight) {
+                      setImage(R.drawable.runaway);
+                      boolean successful = player.run();
+                      //if successful run
+                      if (successful) {
+                          //System.out.println("You ran");
+                          setQuestionText("You ran away successfully");
+                          speak("You ran away successfully.");
+                          hasRun = true;
+                          sleepThread(4000);
+                          break;
 
-                    } else {
-                        //System.out.println("You didn't run away");
-                        setQuestionText("You didn't run away successfully");
-                        speak("You didn't run away successfully.");
-                        fight = true;
-                        sleepThread(4000);
-                    }
-                }
-                //if fight
-                if (fight) {
-                    fightFoe();
-                    hasRun = false;
-                    //if dead
-                    if (player.HP <= 0) {
-                        dead = true;
-                        break;
-                    }
-                    if(currentLoc.HP <= 0){
-                        break;
-                    }
-                }
-            }
+                      } else {
+                          //System.out.println("You didn't run away");
+                          setQuestionText("You didn't run away successfully");
+                          speak("You didn't run away successfully.");
+                          fight = true;
+                          sleepThread(4000);
+                      }
+                  }
+                  //if fight
+                  if (fight) {
+                      fightFoe();
+                      hasRun = false;
+                      //if dead
+                      if (player.HP <= 0) {
+                          dead = true;
+                          break;
+                      }
+                      if(currentLoc.HP <= 0){
+                          break;
+                      }
+                  }
+              }
+          }
         }
         //if at end
         else if(currentLoc.Activity == activity.End){
@@ -319,7 +317,7 @@ public class Controller extends Thread {
     public boolean canFinish(){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if(map[i][j].hasKey == true){
+                if(map[i][j].hasKey == true && map[i][j].visited == true){
                     return true;
                 }
             }
@@ -336,13 +334,12 @@ public class Controller extends Thread {
         //System.out.println("Run or Fight: ");
         setImage(R.drawable.questionmark);
         setQuestionText("Run or Fight?");
-        speak("Run or fight?");
         setOptionsText(Arrays.asList("Run", "Fight"));
+        speak("Run or fight?");
         sleepThread(4000);
         startListening();
 
         //String input = scanner.next();
-        startListening();
         while(true) {
             if(moveActivity.lastSpoken == null) continue;
             if(moveActivity.lastSpoken == "") continue;
