@@ -150,41 +150,43 @@ public class Controller extends Thread {
                 dirs = dirs + currentLoc.directions[i] + " or ";
             }
         }
+
+
         setImage(R.drawable.questionmark);
         setQuestionText("Which direction?");
         setOptionsText(Arrays.asList(currentLoc.directions));
         speak("Which direction? You can go " + dirs);
-        sleepThread(4000);
+        sleepThread(5000);
         startListening();
+        sleepThread(500);
 
-        boolean worked = false;
-        while(true){
+        while(true) {
             if(moveActivity.lastSpoken == null) continue;
-            if(moveActivity.lastSpoken == "") continue;
+            if(moveActivity.lastSpoken.equals("")) continue;
+            if(moveActivity.lastSpoken.isEmpty()) continue;
             for(int i = 0; i < currentLoc.directions.length; i++){
                 if(moveActivity.lastSpoken.toLowerCase().contains(currentLoc.directions[i].toLowerCase())){
-                    worked = true;
                     //move robot that direction
                     move(moveActivity.lastSpoken.toLowerCase());
                     player.move(moveActivity.lastSpoken);
                     numMoves--;
-                    break;
+                    currentLoc = map[player.xCoord][player.yCoord];
+                    currentLoc.visited = true;
+                    setQuestionText("New current node: " + currentLoc.name);
+                    speak("New current node is " + currentLoc.name);
+                    sleepThread(4000);
+                    return;
                 }
             }
-            if(!worked) {
-                setQuestionText("Which direction?");
-                setOptionsText(Arrays.asList(currentLoc.directions));
-                speak("Which direction? You can go " + dirs);
-                sleepThread(4000);
-                startListening();
-            }
-        }
+            setImage(R.drawable.questionmark);
+            setQuestionText("Which direction?");
+            setOptionsText(Arrays.asList(currentLoc.directions));
+            speak("Which direction? You can go " + dirs);
+            sleepThread(5000);
+            startListening();
+            sleepThread(500);
 
-        currentLoc = map[player.xCoord][player.yCoord];
-        currentLoc.visited = true;
-        setQuestionText("New current node: " + currentLoc.name);
-        speak("New current node is " + currentLoc.name);
-        sleepThread(4000);
+        }
 
         //System.out.println("New current node: " + currentLoc.name);
     }
@@ -203,7 +205,7 @@ public class Controller extends Thread {
                   currentLoc.HP = currentLoc.HP - 10;
                   setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                   speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                  sleepThread(4000);
+                  sleepThread(5000);
             }
             else if (currentLoc.Activity == activity.WFoe && currentLoc.HP >= 5) {
                   player.fight(currentLoc.Activity);
@@ -211,7 +213,7 @@ public class Controller extends Thread {
                   currentLoc.HP = currentLoc.HP - 5;
                   setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                   speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
-                  sleepThread(4000);
+                  sleepThread(5000);
             }
         }
     }
@@ -335,6 +337,7 @@ public class Controller extends Thread {
         speak("Run or fight?");
         sleepThread(4000);
         startListening();
+        sleepThread(500);
 
         //String input = scanner.next();
         while(true) {
@@ -347,6 +350,7 @@ public class Controller extends Thread {
 
             } else {
                 startListening();
+                sleepThread(500);
             }
         }
     }
@@ -397,6 +401,7 @@ public class Controller extends Thread {
     private void startListening() {
         moveActivity.runOnUiThread(new Runnable() {
             public void run() {
+                moveActivity.clearSpeech();
                 moveActivity.startSpeechRecognition();
             }
         });

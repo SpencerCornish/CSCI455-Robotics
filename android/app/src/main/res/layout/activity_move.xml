@@ -44,14 +44,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/questionText" />
 
-    <Button
-        android:id="@+id/voiceDebug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onListen"
-        android:text="Listen Again"
-        android:visibility="visible"
-        tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="428dp" />
-
 </android.support.constraint.ConstraintLayout>

@@ -202,6 +202,10 @@ public class MoveActivity extends Activity implements RecognitionListener {
 
     }
 
+    public void clearSpeech() {
+        lastSpoken = "";
+    }
+
     public void startSpeechRecognition() {
         lastSpoken = "";
         speechRecognizer.startListening(speechIntent);
