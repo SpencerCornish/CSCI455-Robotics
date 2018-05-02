@@ -36,7 +36,6 @@ class Network:
                 print("Got a connection from %s" % str(self.phoneIp))
                 
             incomingString = ""
-            print("recv")
             incoming = self.clientSocket.recv(32).decode("utf8")
             print("incoming: " + incoming)
             incomingString += incoming

@@ -15,23 +15,50 @@ def setup():
     recThread.start()
 
     while True:
+        time.sleep(.1)
         if net.incomingVoiceText is not None:
-            if net.incomingVoiceText is "forward":
-                mover.one_forward(1)
-            if net.incomingVoiceText is "backwards":
-                mover.one_backward(1)
-            if net.incomingVoiceText is "left":
+            word = net.incomingVoiceText.lower()
+            if "north" in word:
+                mover.one_forward(2)
+            if "south" in word:
+                mover.one_backward(2)
+            if "west" in word:
                 mover.turn_left(1)
-                mover.one_forward(1)
+                mover.one_forward(2.5)
+                mover.turn_right(.9)
+            if "east" in word:
                 mover.turn_right(1)
-            if net.incomingVoiceText is "right":
-                mover.turn_right(1)
-                mover.one_forward(1)
-                mover.turn_left(1)
-            if net.incomingVoiceText is "fight":
+                mover.one_forward(2.5)
+                mover.turn_left(1.1)
+            if "fight" in word:
                 mover.fight()
-            if net.incomingVoiceText is "recharge":
+            if "recharge" in word:
                 mover.recharge()
+            net.incomingVoiceText = None
+
+def testing():
+    mover = move.Move()
+    time.sleep(2)
+    mover.one_forward(2)
+    time.sleep(2)
+    mover.one_backward(1.8)
+    time.sleep(2)
+    mover.turn_left(1)
+    mover.one_forward(2.5)
+    mover.turn_right(.8)
+    time.sleep(2)
+    mover.turn_right(1)
+    mover.one_forward(2.5)
+    mover.turn_left(1.1)
+    time.sleep(2)
+    mover.fight()
+    time.sleep(2)
+    mover.recharge()
+
+
+
+
+
 
 if __name__ == '__main__':
     setup()

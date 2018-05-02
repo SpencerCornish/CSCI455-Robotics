@@ -58,8 +58,7 @@ public class MoveActivity extends Activity implements RecognitionListener {
         setContentView(R.layout.activity_move);
 
 
-        //String ipInput = "10.200.62.12";
-        String ipInput = "";
+        String ipInput = "10.200.62.12";
 
         Net listener;
         if(!ipInput.equals("")) {
@@ -228,10 +227,6 @@ public class MoveActivity extends Activity implements RecognitionListener {
             System.out.println("Error Setting optionsText:" + e.toString());
             e.printStackTrace();
         }
-    }
-
-    public void moveForward(int seconds) {
-
     }
 
 

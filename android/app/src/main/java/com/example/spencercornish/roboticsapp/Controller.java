@@ -169,6 +169,7 @@ public class Controller extends Thread {
                 if(moveActivity.lastSpoken.toLowerCase().contains(currentLoc.directions[i].toLowerCase())){
                     worked = true;
                     //move robot that direction;
+                    move(moveActivity.lastSpoken.toLowerCase());
                     player.move(moveActivity.lastSpoken);
                     numMoves -= 1;
 
@@ -207,6 +208,7 @@ public class Controller extends Thread {
             if (currentLoc.Activity == activity.SFoe) {
                 if (currentLoc.HP >= 10) {
                     player.fight(currentLoc.Activity);
+                    move("fight");
                     currentLoc.HP = currentLoc.HP - 10;
                     setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                     speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
@@ -216,6 +218,7 @@ public class Controller extends Thread {
             if (currentLoc.Activity == activity.WFoe) {
                 if (currentLoc.HP >= 5) {
                     player.fight(currentLoc.Activity);
+                    move("fight");
                     currentLoc.HP = currentLoc.HP - 5;
                     setQuestionText("You fought. HP: " + player.HP + " Foe HP: " + currentLoc.HP);
                     speak("You fought. HP is now " + player.HP + ". Foe HP is now " + currentLoc.HP);
@@ -236,6 +239,7 @@ public class Controller extends Thread {
             hasRun = false;
             //System.out.println("Recharged. HP: "+ player.HP);
             setImage(R.drawable.recharge);
+            move("recharge");
             setQuestionText("Recharged. HP: " + player.HP);
             speak("Recharged. HP is " + player.HP);
             sleepThread(4000);
@@ -408,6 +412,14 @@ public class Controller extends Thread {
         moveActivity.runOnUiThread(new Runnable() {
             public void run() {
                 moveActivity.speak(toSay);
+            }
+        });
+    }
+
+    private void move(final String move) {
+        moveActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                moveActivity.moveRobot(move);
             }
         });
     }
