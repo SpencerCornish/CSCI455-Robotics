@@ -168,7 +168,7 @@ public class Controller extends Thread {
                     move(moveActivity.lastSpoken.toLowerCase());
                     player.move(moveActivity.lastSpoken);
                     numMoves--;
-
+                    break;
                 }
             }
             if(!worked) {
@@ -177,9 +177,6 @@ public class Controller extends Thread {
                 speak("Which direction? You can go " + dirs);
                 sleepThread(4000);
                 startListening();
-            }
-            else {
-                break;
             }
         }
 
